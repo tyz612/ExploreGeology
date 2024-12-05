@@ -1,6 +1,10 @@
 package com.geology.service;
 
+import com.geology.domain.DTO.RectangleDTO;
+import com.geology.domain.bean.EnvolopeBean;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
+import com.geology.domain.bean.GeologyTypeGeometryBean;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +34,22 @@ public class GeologyToolsImpl implements GeologyTools{
         List<GeologyBufferStatisticBean> geologyBufferStatisticBean = getGeologyInfoMapper.getGeologyInfoWithinBuffer(lon, lat, rad);
 
         return geologyBufferStatisticBean;
+    }
+
+
+    @Override
+    public List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(RectangleDTO rectangleDTO) {
+        List<GeologyTypeGeometryBean> geologyTypeGeometryBeans = getGeologyInfoMapper.getGeologyTypesByRectangle(rectangleDTO.getMinLon(), rectangleDTO.getMinLat(), rectangleDTO.getMaxLon(), rectangleDTO.getMaxLat());
+
+
+        return geologyTypeGeometryBeans;
+    }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByRectangle(RectangleDTO rectangleDTO) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByRectangle(rectangleDTO.getMinLon(), rectangleDTO.getMinLat(), rectangleDTO.getMaxLon(), rectangleDTO.getMaxLat());
+
+
+        return singleFileGeologyType;
     }
 }

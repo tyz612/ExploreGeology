@@ -3,6 +3,7 @@ package com.geology.controller;
 import com.geology.common.utils.CoordinateTransformUtil;
 import com.geology.common.utils.BandReductionUtil;
 import com.geology.domain.DTO.CoordinateDTO;
+import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.DTO.RectifyDTO;
 import com.geology.domain.DTO.SingleCoordinateTransformDTO;
 import com.geology.domain.bean.*;
@@ -154,6 +155,31 @@ public class GeoToolsController {
         List<GeologyBufferStatisticBean> geologyBufferStatisticBeans = geologyTools.getGeologyInfoWithinBuffer(lon, lat, rad);
 
         return geologyBufferStatisticBeans;
+    }
+
+    @PostMapping("/getGeologyInfoByRectangle")
+    public List<GeologyTypeGeometryBean> getGeologyInfoByRectangle(@RequestBody RectangleDTO rectangleDTO) {
+        if (rectangleDTO == null)
+        {
+            throw new RuntimeException("Params empty.");
+        }
+
+        List<GeologyTypeGeometryBean> geologyTypeGeometryBeans = geologyTools.getGeologyTypesByRectangle(rectangleDTO);
+
+        return geologyTypeGeometryBeans;
+    }
+
+
+    @PostMapping("/getGeologyFileByRectangle")
+    public SingleFileGeologyType getGeologyFileByRectangle(@RequestBody RectangleDTO rectangleDTO) {
+        if (rectangleDTO == null)
+        {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByRectangle(rectangleDTO);
+
+        return singleFileGeologyType;
     }
 
 }

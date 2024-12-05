@@ -2,6 +2,8 @@ package com.geology.repository.db.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
+import com.geology.domain.bean.GeologyTypeGeometryBean;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,4 +36,51 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "WHERE\n" +
             "    ST_Intersects(a.buffergeom, b.geom);")
     List<GeologyBufferStatisticBean> getGeologyInfoWithinBuffer(@Param("lon") double lon, @Param("lat") double lat, @Param("rad") double rad);
+
+    @Select("SELECT\n" +
+            "t.gid,\n" +
+            "t.qduecd,\n" +
+            "json_build_object(\n" +
+            "    'type', 'Feature',\n" +
+            "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "      'gid', t.gid,\n" +
+            "      'qduecd', t.qduecd\n" +
+            ")\n" +
+            "  ) ::text AS geojson_feature\n" +
+            "FROM\n" +
+            "merge t,\n" +
+            "  (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
+            "WHERE\n" +
+            "ST_Intersects(t.geom, r.rect);")
+    List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(@Param("minLon") double minLon,
+                                                             @Param("minLat") double minLat,
+                                                             @Param("maxLon") double maxLon,
+                                                             @Param("maxLat") double maxLat);
+
+
+    @Select("SELECT\n" +
+            "    json_build_object(\n" +
+            "            'type', 'FeatureCollection',\n" +
+            "            'features', json_agg(json_build_object(\n" +
+            "            'type', 'Feature',\n" +
+            "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
+            "            'properties', json_build_object(\n" +
+            "                    'gid', t.gid,\n" +
+            "                    'qduecd', t.qduecd\n" +
+            "                          )\n" +
+            "                                 ))\n" +
+            "    )::text AS geojson_featurecollection\n" +
+            "FROM\n" +
+            "    merge t,\n" +
+            "    (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
+            "WHERE\n" +
+            "    ST_Intersects(t.geom, r.rect);")
+    SingleFileGeologyType getGeologyFileByRectangle(@Param("minLon") double minLon,
+                                                    @Param("minLat") double minLat,
+                                                    @Param("maxLon") double maxLon,
+                                                    @Param("maxLat") double maxLat);
+
 }
+
+
