@@ -8,5 +8,13 @@ public class GeologyTypeGeometryBean {
 
     private String qduecd;
 
+    private String qduecc;
+
+    private String yshb;
+
+    private String mdaec;
+
+    private double intersectionArea;
+
     private String geojsonFeature;
 }

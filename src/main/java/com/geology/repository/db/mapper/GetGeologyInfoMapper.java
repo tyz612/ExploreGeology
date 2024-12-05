@@ -40,12 +40,19 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     @Select("SELECT\n" +
             "t.gid,\n" +
             "t.qduecd,\n" +
+            "t.qduecc,\n" +
+            "t.yshb,\n" +
+            "t.mdaec,\n" +
+            "ST_Area(ST_Intersection(t.geom, r.rect))*10000 AS intersection_area,\n" +
             "json_build_object(\n" +
             "    'type', 'Feature',\n" +
             "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
             "        'properties', json_build_object(\n" +
             "      'gid', t.gid,\n" +
-            "      'qduecd', t.qduecd\n" +
+            "      'qduecd', t.qduecd,\n" +
+            "      'qduecc', t.qduecc,\n" +
+            "      'yshb', t.yshb,\n" +
+            "      'mdaec', t.mdaec\n" +
             ")\n" +
             "  ) ::text AS geojson_feature\n" +
             "FROM\n" +
@@ -67,7 +74,10 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
             "            'properties', json_build_object(\n" +
             "                    'gid', t.gid,\n" +
-            "                    'qduecd', t.qduecd\n" +
+            "                    'qduecd', t.qduecd,\n" +
+            "                    'qduecc', t.qduecc,\n" +
+            "                    'yshb', t.yshb,\n" +
+            "                    'mdaec', t.mdaec\n" +
             "                          )\n" +
             "                                 ))\n" +
             "    )::text AS geojson_featurecollection\n" +
