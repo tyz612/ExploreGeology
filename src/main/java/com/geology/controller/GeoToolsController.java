@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import com.geology.service.GeoTools;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/geotools")
@@ -146,6 +147,13 @@ public class GeoToolsController {
         GeologyInfoEntity geologyInfoEntity = geologyTools.getGeologyInfoByLonLat(lon, lat);
 
         return geologyInfoEntity;
+    }
+
+    @GetMapping("/getGeologyInfoWithinBuffer")
+    public List<GeologyBufferStatisticBean> getGeologyInfoWithinBuffer(@RequestParam("lon") double lon, @RequestParam("lat") double lat, @RequestParam("rad") double rad) {
+        List<GeologyBufferStatisticBean> geologyBufferStatisticBeans = geologyTools.getGeologyInfoWithinBuffer(lon, lat, rad);
+
+        return geologyBufferStatisticBeans;
     }
 
 }
