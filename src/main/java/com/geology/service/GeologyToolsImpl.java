@@ -52,4 +52,12 @@ public class GeologyToolsImpl implements GeologyTools{
 
         return singleFileGeologyType;
     }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByCountyCode(String countyCode) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByCountyCode(Long.parseLong(countyCode));
+
+
+        return singleFileGeologyType;
+    }
 }

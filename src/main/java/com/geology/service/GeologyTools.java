@@ -17,4 +17,6 @@ public interface GeologyTools {
     List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(RectangleDTO rectangleDTO);
 
     SingleFileGeologyType getGeologyFileByRectangle(RectangleDTO rectangleDTO);
+    SingleFileGeologyType getGeologyFileByCountyCode(String countyCode);
+
 }

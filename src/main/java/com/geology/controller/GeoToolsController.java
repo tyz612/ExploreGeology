@@ -182,4 +182,16 @@ public class GeoToolsController {
         return singleFileGeologyType;
     }
 
+    @GetMapping("/getGeologyFileByCountyCode")
+    public SingleFileGeologyType getGeologyFileByCountyCode(@RequestParam("countyCode") String countyCode) {
+        if (countyCode == null)
+        {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByCountyCode(countyCode);
+
+        return singleFileGeologyType;
+    }
+
 }

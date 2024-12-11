@@ -91,6 +91,28 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
                                                     @Param("maxLon") double maxLon,
                                                     @Param("maxLat") double maxLat);
 
+
+    @Select("SELECT\n" +
+            "    json_build_object(\n" +
+            "            'type', 'FeatureCollection',\n" +
+            "            'features', json_agg(json_build_object(\n" +
+            "            'type', 'Feature',\n" +
+            "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, c.geom))::json,\n" +
+            "            'properties', json_build_object(\n" +
+            "                    'gid', t.gid,\n" +
+            "                    'qduecd', t.qduecd\n" +
+            "                -- 在这里添加更多的属性字段\n" +
+            "                          )\n" +
+            "                                 ))\n" +
+            "    )::json AS geojson_featurecollection\n" +
+            "FROM\n" +
+            "    merge t,\n" +
+            "    county c\n" +
+            "WHERE\n" +
+            "    c.adcode = #{countyCode} and\n" +
+            "    ST_Intersects(t.geom, c.geom);")
+    SingleFileGeologyType getGeologyFileByCountyCode(@Param("countyCode") Long countyCode);
+
 }
 
 
