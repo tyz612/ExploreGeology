@@ -1,5 +1,6 @@
 package com.geology.service;
 
+import com.geology.common.utils.DownloadFileUtil;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.EnvolopeBean;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
@@ -9,6 +10,7 @@ import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,12 @@ public class GeologyToolsImpl implements GeologyTools{
 
     @Autowired
     private GetGeologyInfoMapper getGeologyInfoMapper;
+
+    @Autowired
+    private DownloadFileUtil downloadFileUtil;
+
+    @Value("${app.geojson.file-path}")
+    private String geoJsonFilePath;
 
     @Override
     public GeologyInfoEntity getGeologyInfoByLonLat(double lon, double lat) {
@@ -56,7 +64,7 @@ public class GeologyToolsImpl implements GeologyTools{
     @Override
     public SingleFileGeologyType getGeologyFileByCountyCode(String countyCode) {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByCountyCode(Long.parseLong(countyCode));
-
+        downloadFileUtil.writeGeoJsonToFile(singleFileGeologyType.getGeojsonFeaturecollection().toString(), geoJsonFilePath.concat(countyCode).concat(".json"));
 
         return singleFileGeologyType;
     }

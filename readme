@@ -1,3 +1,17 @@
 Here is a brief description about ExploreGeology project.
 
 My goal is to build a tool that helps guys interested in geology get geology information conveniently. 
+
+
+12-11
+· PostGIS中执行地质矢量与县相交函数时，报错：
+    "PSQLException: ERROR: lwgeom_intersection_prec: GEOS Error: TopologyException: Input geom 1 is invalid: Self-intersection at 106.35511514934601 29.616796000748746
+· 问题原因：
+    在使用 PostgreSQL 中的 PostGIS 扩展进行几何对象操作时发生了一个 GEOS（Geometry Engine Open Source）库的拓扑异常。这通常意味着几何对象在执行交集（intersection）或其他几何操作时违反了拓扑学的规则，例如，有一个几何对象自相交，或者几何对象间存在非拓扑关系的交叉。
+
+·解决方案：
+    首先检查PostGIS数据库中的geom是否都有效：
+    SELECT ST_IsValid(t.geom) AS is_valid FROM merge t;
+    再对全部geom对象执行修复：
+    UPDATE merge SET geom = ST_MakeValid(geom, 'method=structure');
+    再求交既正常。
