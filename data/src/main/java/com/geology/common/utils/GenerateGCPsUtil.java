@@ -19,8 +19,7 @@ public class GenerateGCPsUtil {
     @Autowired
     private CoordinateTransformUtil coordinateTransformUtil;
 
-    public ArrayList<GCP> generateGCPs(RectifyTIFInfoBean rectifyTIFInfoBean)
-    {
+    public ArrayList<GCP> generateGCPs(RectifyTIFInfoBean rectifyTIFInfoBean) {
         gdal.AllRegister();
         Dataset source = gdal.Open(rectifyTIFInfoBean.getInputFilePath());
         ArrayList<GCP> gcps = new ArrayList<>();
@@ -31,11 +30,11 @@ public class GenerateGCPsUtil {
         int rows = source.getRasterYSize();
 
         int[] XSamples = IntStream.range(0, cols + 1)
-                .filter(i -> (i - 0) % (cols/rectifyTIFInfoBean.getGcpNumbers()) == 0)
+                .filter(i -> (i - 0) % (cols / rectifyTIFInfoBean.getGcpNumbers()) == 0)
                 .toArray();
 
         int[] YSamples = IntStream.range(0, rows + 1)
-                .filter(i -> (i - 0) % (rows/rectifyTIFInfoBean.getGcpNumbers()) == 0)
+                .filter(i -> (i - 0) % (rows / rectifyTIFInfoBean.getGcpNumbers()) == 0)
                 .toArray();
 
         ArrayList<Integer> ori_x_ls = new ArrayList<>();
@@ -45,10 +44,8 @@ public class GenerateGCPsUtil {
         ArrayList<Double> gcj_lon_ls = new ArrayList<>();
         ArrayList<Double> gcj_lat_ls = new ArrayList<>();
 
-        for (int i : YSamples)
-        {
-            for (int j : XSamples)
-            {
+        for (int i : YSamples) {
+            for (int j : XSamples) {
                 double ori_lon = j * geotransform[1] + geotransform[0];
                 double ori_lat = i * geotransform[5] + geotransform[3];
                 int ori_x = j;

@@ -2,6 +2,7 @@ package com.geology.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class WriteCoordinateTxtUtil {
      * 写出控制点文件，可直接在ArcGIS中加载-配准
      *
      * @param refCoordinates 控制点二维数组（前两列为WGS84, 后两列为GCJ02）
-     * @param outputPath 控制点文件的输出路径
+     * @param outputPath     控制点文件的输出路径
      * @return 保存文件的路径
      */
     public String writeCoordinate2Txt(double[][] refCoordinates, String outputPath) {

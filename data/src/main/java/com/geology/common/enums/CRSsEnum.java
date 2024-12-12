@@ -18,8 +18,7 @@ public enum CRSsEnum {
 
     private Integer code;
 
-    CRSsEnum(String coordination, Integer code)
-    {
+    CRSsEnum(String coordination, Integer code) {
         this.coordination = coordination;
         this.code = code;
     }

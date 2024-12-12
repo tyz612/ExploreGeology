@@ -8,8 +8,7 @@ public class CoordinateBean {
 
     private double lat;
 
-    public CoordinateBean(double lon, double lat)
-    {
+    public CoordinateBean(double lon, double lat) {
         this.lon = lon;
         this.lat = lat;
     }

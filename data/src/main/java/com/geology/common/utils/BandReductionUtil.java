@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class BandReductionUtil {
 
-    public void generateRGBImage()
-    {
+    public void generateRGBImage() {
         gdal.AllRegister();
 
         // 打开原始影像文件

@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class GeologyToolsImpl implements GeologyTools{
+public class GeologyToolsImpl implements GeologyTools {
 
     @Autowired
     private GetGeologyInfoMapper getGeologyInfoMapper;

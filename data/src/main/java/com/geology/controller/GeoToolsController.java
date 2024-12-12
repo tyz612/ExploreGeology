@@ -43,8 +43,7 @@ public class GeoToolsController {
      */
     @GetMapping("/TIFInfo")
     public TIFInfoBean TIFInfo(@RequestParam("inputRaster") String inputRaster) {
-        if (inputRaster == null)
-        {
+        if (inputRaster == null) {
             throw new RuntimeException("Param is empty.");
         }
 
@@ -66,8 +65,8 @@ public class GeoToolsController {
 
     @GetMapping("/clip")
     public String clip(@RequestParam("inputRaster") String inputRaster,
-                     @RequestParam("inputShp") String inputShp,
-                     @RequestParam("outputRaster") String outputRaster) {
+                       @RequestParam("inputShp") String inputShp,
+                       @RequestParam("outputRaster") String outputRaster) {
         String outputPath = geoTools.clipImage(inputRaster, inputShp, outputRaster);
         return outputPath;
     }
@@ -75,8 +74,7 @@ public class GeoToolsController {
 
     @PostMapping("/getGCJ02fromWGS84")
     public CoordinateBean getGCJ02fromWGS84(@RequestBody CoordinateDTO coordinateDTO) {
-        if (coordinateDTO == null)
-        {
+        if (coordinateDTO == null) {
             throw new RuntimeException("params empty.");
         }
         CoordinateBean coordinateBean = new CoordinateBean(coordinateDTO.getLon(), coordinateDTO.getLat());
@@ -88,8 +86,7 @@ public class GeoToolsController {
 
     @PostMapping("/generateGCPsTxt")
     public RectifyInfoBean generateGCPsTxt(@RequestBody RectifyDTO rectifyDTO) {
-        if (rectifyDTO == null)
-        {
+        if (rectifyDTO == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -101,8 +98,7 @@ public class GeoToolsController {
 
     @PostMapping("/generateGCPs")
     public ArrayList<GCP> generateGCPs(@RequestBody RectifyTIFInfoBean rectifyTIFInfoBean) {
-        if (rectifyTIFInfoBean == null)
-        {
+        if (rectifyTIFInfoBean == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -114,8 +110,7 @@ public class GeoToolsController {
 
     @PostMapping("/rectifyByGCP")
     public String rectifyByGCP(@RequestBody RectifyTIFInfoBean rectifyTIFInfoBean) {
-        if (rectifyTIFInfoBean == null)
-        {
+        if (rectifyTIFInfoBean == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -128,8 +123,7 @@ public class GeoToolsController {
 
     @PostMapping("/singleCoordinateTransform")
     public SingleCoordinateTransformBean singleCoordinateTransform(@RequestBody SingleCoordinateTransformDTO singleCoordinateTransformDTO) {
-        if (singleCoordinateTransformDTO == null)
-        {
+        if (singleCoordinateTransformDTO == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -159,8 +153,7 @@ public class GeoToolsController {
 
     @PostMapping("/getGeologyInfoByRectangle")
     public List<GeologyTypeGeometryBean> getGeologyInfoByRectangle(@RequestBody RectangleDTO rectangleDTO) {
-        if (rectangleDTO == null)
-        {
+        if (rectangleDTO == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -172,8 +165,7 @@ public class GeoToolsController {
 
     @PostMapping("/getGeologyFileByRectangle")
     public SingleFileGeologyType getGeologyFileByRectangle(@RequestBody RectangleDTO rectangleDTO) {
-        if (rectangleDTO == null)
-        {
+        if (rectangleDTO == null) {
             throw new RuntimeException("Params empty.");
         }
 
@@ -184,8 +176,7 @@ public class GeoToolsController {
 
     @GetMapping("/getGeologyFileByCountyCode")
     public SingleFileGeologyType getGeologyFileByCountyCode(@RequestParam("countyCode") String countyCode) {
-        if (countyCode == null)
-        {
+        if (countyCode == null) {
             throw new RuntimeException("Params empty.");
         }
 

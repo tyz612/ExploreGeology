@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoordinateTransformUtil {
 
-    private static double ee =  0.00669342162296594323;   //扁率
+    private static double ee = 0.00669342162296594323;   //扁率
     private static double a = 6378245.0;                  //长半轴
-    public static double transformLat(double lon, double lat)
-    {
+
+    public static double transformLat(double lon, double lat) {
         double dlat = -100.0 + 2.0 * lon + 3.0 * lat + 0.2 * lat * lat + 0.1 * lon * lat + 0.2 * Math.sqrt(Math.abs(lon));
         dlat += (20.0 * Math.sin(6.0 * lon * Math.PI) + 20.0 * Math.sin(2.0 * lon * Math.PI)) * 2.0 / 3.0;
         dlat += (20.0 * Math.sin(lat * Math.PI) + 40.0 * Math.sin(lat / 3.0 * Math.PI)) * 2.0 / 3.0;
@@ -20,8 +20,7 @@ public class CoordinateTransformUtil {
         return dlat;
     }
 
-    public static double transformlon(double lon, double lat)
-    {
+    public static double transformlon(double lon, double lat) {
         double dlon = 300.0 + lon + 2.0 * lat + 0.1 * lon * lon + 0.1 * lon * lat + 0.1 * Math.sqrt(Math.abs(lon));
         dlon += (20.0 * Math.sin(6.0 * lon * Math.PI) + 20.0 * Math.sin(2.0 * lon * Math.PI)) * 2.0 / 3.0;
         dlon += (20.0 * Math.sin(lon * Math.PI) + 40.0 * Math.sin(lon / 3.0 * Math.PI)) * 2.0 / 3.0;
@@ -32,8 +31,7 @@ public class CoordinateTransformUtil {
     }
 
 
-    public CoordinateBean wgs84togcj02(CoordinateBean coordinateBean)
-    {
+    public CoordinateBean wgs84togcj02(CoordinateBean coordinateBean) {
         double dlat = transformLat(coordinateBean.getLon() - 105.0, coordinateBean.getLat() - 35.0);
         double dlon = transformlon(coordinateBean.getLon() - 105.0, coordinateBean.getLat() - 35.0);
         double radlat = coordinateBean.getLat() / 180.0 * Math.PI;

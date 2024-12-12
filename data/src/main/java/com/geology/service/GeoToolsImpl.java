@@ -62,8 +62,7 @@ public class GeoToolsImpl implements GeoTools {
     public String clipImage(String inputRaster, String inputShp, String outputRaster) {
         gdal.AllRegister();
 
-        if (inputRaster == null || inputShp == null || outputRaster == null)
-        {
+        if (inputRaster == null || inputShp == null || outputRaster == null) {
             throw new RuntimeException("Params missing.");
         }
         Dataset source = gdal.Open(inputRaster); //tif文件路径
@@ -95,7 +94,7 @@ public class GeoToolsImpl implements GeoTools {
     @Override
     public RectifyInfoBean generateGCPsFile(RectifyDTO rectifyDTO) {
         gdal.AllRegister();
-        String inputRasterFilePath =  rectifyDTO.getInputRaster();
+        String inputRasterFilePath = rectifyDTO.getInputRaster();
         Dataset source = gdal.Open(inputRasterFilePath);
 
         double[] geotransform = source.GetGeoTransform();
@@ -103,11 +102,11 @@ public class GeoToolsImpl implements GeoTools {
         int rows = source.getRasterYSize();
 
         int[] XSamples = IntStream.range(0, cols + 1)
-                .filter(i -> (i - 0) % (cols/rectifyDTO.getGcpNumbers()) == 0)
+                .filter(i -> (i - 0) % (cols / rectifyDTO.getGcpNumbers()) == 0)
                 .toArray();
 
         int[] YSamples = IntStream.range(0, rows + 1)
-                .filter(i -> (i - 0) % (rows/rectifyDTO.getGcpNumbers()) == 0)
+                .filter(i -> (i - 0) % (rows / rectifyDTO.getGcpNumbers()) == 0)
                 .toArray();
 
         ArrayList<Integer> ori_x_ls = new ArrayList<>();
@@ -117,10 +116,8 @@ public class GeoToolsImpl implements GeoTools {
         ArrayList<Double> gcj_lon_ls = new ArrayList<>();
         ArrayList<Double> gcj_lat_ls = new ArrayList<>();
 
-        for (int i : YSamples)
-        {
-            for (int j : XSamples)
-            {
+        for (int i : YSamples) {
+            for (int j : XSamples) {
                 double ori_lon = j * geotransform[1] + geotransform[0];
                 double ori_lat = i * geotransform[5] + geotransform[3];
                 int ori_x = j;
@@ -190,8 +187,8 @@ public class GeoToolsImpl implements GeoTools {
             int[] data = new int[srcDataset.getRasterXSize() * srcDataset.getRasterYSize()];
 
             // buf_type对应的是gdal的int类型，此处必须和java数组的数据类型(int[])保持一致
-            int src1 =  srcBand.ReadRaster(0, 0, width, height,5, data);
-            int dst1 = dstBand.WriteRaster(0, 0, width, height,5, data);
+            int src1 = srcBand.ReadRaster(0, 0, width, height, 5, data);
+            int dst1 = dstBand.WriteRaster(0, 0, width, height, 5, data);
 
         }
 
@@ -203,7 +200,7 @@ public class GeoToolsImpl implements GeoTools {
     @Override
     public SingleCoordinateTransformBean singleCoordinateTransform(SingleCoordinateTransformDTO singleCoordinateTransformDTO) {
 
-        SingleCoordinateTransformBean resultSingleCoordinate =  singleCoordinateTransformUtil.singleCoordinateTransform(singleCoordinateTransformDTO);
+        SingleCoordinateTransformBean resultSingleCoordinate = singleCoordinateTransformUtil.singleCoordinateTransform(singleCoordinateTransformDTO);
         return resultSingleCoordinate;
     }
 }
