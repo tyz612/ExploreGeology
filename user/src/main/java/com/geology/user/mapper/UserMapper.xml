@@ -6,17 +6,17 @@
 
     <resultMap id="BaseResultMap" type="com.geology.user.model.domain.User">
         <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="username" column="user_name" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
         <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
-        <result property="gender" column="gender" jdbcType="TINYINT"/>
+        <result property="gender" column="gender" jdbcType="INTEGER"/> <!-- PostgreSQL 中没有 TINYINT，使用 INTEGER -->
         <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
         <result property="userStatus" column="user_status" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="isDelete" column="is_delete" jdbcType="BOOLEAN"/> <!-- PostgreSQL 中使用 BOOLEAN 表示布尔值 -->
         <result property="userRole" column="use_role" jdbcType="INTEGER"/>
         <result property="planetCode" column="planet_code" jdbcType="VARCHAR"/>
     </resultMap>

@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @TableName(value = "userinfo")
 @Data
-public class User implements Serializable {
+public class User {
     /**
      * id
      */
@@ -24,7 +24,7 @@ public class User implements Serializable {
      * 用户昵称
      */
     @TableField("user_name")
-    private String username;
+    private String userName;
 
     /**
      * 账号
@@ -98,8 +98,4 @@ public class User implements Serializable {
      */
     @TableField("planet_code")
     private String planetCode;
-
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }
