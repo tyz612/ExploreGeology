@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.geology.user.common.DistributedIdGenerator;
+import com.geology.user.common.utils.GenerateTokenUtil;
 import com.geology.user.mapper.UserMapper;
 import com.geology.user.model.domain.User;
 import com.geology.user.service.UserService;
@@ -14,10 +15,12 @@ import com.geology.user.model.domain.User;
 import com.geology.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.annotation.Generated;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -41,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private GenerateTokenUtil generateTokenUtil;
     /**
      * 盐值，混淆密码
      */
@@ -111,7 +117,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return 脱敏后的用户信息
      */
     @Override
-    public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public String userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return null;
@@ -136,13 +142,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
-            return null;
+            return "用户名或密码错误";
         }
-        // 3. 用户脱敏
-        User safetyUser = getSafetyUser(user);
-        // 4. 记录用户的登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
-        return safetyUser;
+        else
+        {
+            // 3. 用户脱敏
+            User safetyUser = getSafetyUser(user);
+            // 4. 记录用户的登录态
+            request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
+
+            String token = generateTokenUtil.login(userAccount);
+
+            return token;
+        }
     }
 
     /**

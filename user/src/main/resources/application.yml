@@ -1,4 +1,16 @@
 spring:
+  mail:
+    host: smtp.163.com
+    port: 465 # 或者使用25端口，如果不使用SSL
+    username: 13343387859@163.com
+    password: BVfxjgvHmNkr9NqG # 这里填写你在第一步中获取的授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465 # 如果使用SSL
   application:
     name: user-center-backend
   # DataSource Config

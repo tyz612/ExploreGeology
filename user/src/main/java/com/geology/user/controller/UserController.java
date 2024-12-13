@@ -4,13 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.geology.user.common.BaseResponse;
 import com.geology.user.common.ErrorCode;
 import com.geology.user.common.ResultUtils;
+import com.geology.user.common.bean.MailBean;
+import com.geology.user.common.utils.GenerateCaptchaUtil;
+import com.geology.user.common.utils.GenerateTokenUtil;
+import com.geology.user.common.utils.MailClientUtil;
 import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
 import com.geology.user.model.domain.User;
 import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
 import com.geology.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -18,8 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
-import static com.geology.user.contant.UserConstant.ADMIN_ROLE;
 import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -33,6 +38,12 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Autowired
+    private MailClientUtil mailClientUtil;
+
+    @Autowired
+    private GenerateCaptchaUtil generateCaptchaUtil;
 
     /**
      * 用户注册
@@ -65,7 +76,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -74,8 +85,8 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.userLogin(userAccount, userPassword, request);
-        return ResultUtils.success(user);
+        String token = userService.userLogin(userAccount, userPassword, request);
+        return ResultUtils.success(token);
     }
 
     /**
@@ -155,4 +166,14 @@ public class UserController {
         return user != null && user.getUserRole() == UserConstant.ADMIN_ROLE;
     }
 
+    @GetMapping("/sendCaptcha")
+    public ResponseEntity<String> sendCaptcha(@RequestParam("to") String to) {
+        try {
+            String verifyCode = generateCaptchaUtil.generateCaptcha();
+            mailClientUtil.sendMail(to, "欢迎来到侏罗纪世界，您的验证码是：", verifyCode);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error sending captcha");
+        }
+    }
 }
