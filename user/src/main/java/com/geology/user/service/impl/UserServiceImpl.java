@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -24,6 +26,7 @@ import javax.annotation.Generated;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +47,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     private GenerateTokenUtil generateTokenUtil;
@@ -138,20 +144,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
 
-        User user = userMapper.loginByPassword(userAccount,encryptPassword);
+        User user = userMapper.loginByPassword(userAccount, encryptPassword);
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
             return "用户名或密码错误";
-        }
-        else
-        {
+        } else {
             // 3. 用户脱敏
             User safetyUser = getSafetyUser(user);
             // 4. 记录用户的登录态
             request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
 
             String token = generateTokenUtil.login(userAccount);
+            this.saveTokenAfterLogin(userAccount, token, 10000);
+            log.info(token.concat(" has been saved into redis."));
 
             return token;
         }
@@ -195,4 +201,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return 1;
     }
 
+    private void saveTokenAfterLogin(String userAccount, String token, long tokenExpiration) {
+        // 序列化器，确保存储在Redis中的是JSON格式的字符串
+//        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+//        redisTemplate.setKeySerializer(serializer);
+//        redisTemplate.setValueSerializer(serializer);
+
+        // 将token作为值，用户ID作为key保存到Redis中
+        redisTemplate.opsForValue().set(userAccount, token, tokenExpiration, TimeUnit.MINUTES);
+    }
 }
