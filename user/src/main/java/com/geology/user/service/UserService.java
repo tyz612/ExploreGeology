@@ -21,6 +21,7 @@ public interface UserService extends IService<User> {
      * @param checkPassword 校验密码
      * @param planetCode    星球编号
      * @return 新用户 id
+     *  `   `
      */
     long userRegister(String userAccount, String userPassword, String checkPassword, String planetCode);
 
@@ -42,7 +43,6 @@ public interface UserService extends IService<User> {
      */
     User getSafetyUser(User originUser);
 
-    // [加入编程导航](https://t.zsxq.com/0emozsIJh) 深耕编程提升【两年半】、国内净值【最高】的编程社群、用心服务【20000+】求学者、帮你自学编程【不走弯路】
 
     /**
      * 用户注销

@@ -34,7 +34,7 @@ spring:
   session:
     timeout: 86400
 server:
-  port: 8386
+  port: 8383
   servlet:
     context-path: /user
 mybatis-plus:

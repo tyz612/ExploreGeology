@@ -176,4 +176,10 @@ public class UserController {
             return ResponseEntity.internalServerError().body("Error sending captcha");
         }
     }
+
+
+    @GetMapping("/test")
+    public String hello() {
+        return "hello";
+    }
 }
