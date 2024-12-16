@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.geology.user.common.BaseResponse;
 import com.geology.user.common.ErrorCode;
 import com.geology.user.common.ResultUtils;
-import com.geology.user.common.bean.MailBean;
 import com.geology.user.common.utils.GenerateCaptchaUtil;
-import com.geology.user.common.utils.GenerateTokenUtil;
 import com.geology.user.common.utils.MailClientUtil;
 import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
@@ -14,7 +12,6 @@ import com.geology.user.model.domain.User;
 import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
 import com.geology.user.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +34,7 @@ import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
 public class UserController {
 
     @Resource
-    private UserService userService;
+    private UserService userRelatedService;
 
     @Autowired
     private MailClientUtil mailClientUtil;
@@ -64,7 +61,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode);
+        long result = userRelatedService.userRegister(userAccount, userPassword, checkPassword, planetCode);
         return ResultUtils.success(result);
     }
 
@@ -85,7 +82,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        String token = userService.userLogin(userAccount, userPassword, request);
+        String token = userRelatedService.userLogin(userAccount, userPassword, request);
         return ResultUtils.success(token);
     }
 
@@ -100,7 +97,7 @@ public class UserController {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        int result = userService.userLogout(request);
+        int result = userRelatedService.userLogout(request);
         return ResultUtils.success(result);
     }
 
@@ -119,8 +116,8 @@ public class UserController {
         }
         long userId = currentUser.getId();
         // TODO 校验用户是否合法
-        User user = userService.getById(userId);
-        User safetyUser = userService.getSafetyUser(user);
+        User user = userRelatedService.getById(userId);
+        User safetyUser = userRelatedService.getSafetyUser(user);
         return ResultUtils.success(safetyUser);
     }
 
@@ -135,8 +132,8 @@ public class UserController {
         if (StringUtils.isNotBlank(username)) {
             queryWrapper.like("username", username);
         }
-        List<User> userList = userService.list(queryWrapper);
-        List<User> list = userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
+        List<User> userList = userRelatedService.list(queryWrapper);
+        List<User> list = userList.stream().map(user -> userRelatedService.getSafetyUser(user)).collect(Collectors.toList());
         return ResultUtils.success(list);
     }
 
@@ -148,7 +145,7 @@ public class UserController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean b = userService.removeById(id);
+        boolean b = userRelatedService.removeById(id);
         return ResultUtils.success(b);
     }
 
@@ -170,7 +167,7 @@ public class UserController {
     public ResponseEntity<String> sendCaptcha(@RequestParam("to") String to) {
         try {
             String verifyCode = generateCaptchaUtil.generateCaptcha();
-            mailClientUtil.sendMail(to, "欢迎来到侏罗纪世界，您的验证码是：", verifyCode);
+            mailClientUtil.sendMail(to, "欢迎您注册Rock_ain't_raw", "地质学指出了一条折中之道，介于人类对自身重要性的自恋式骄傲，与人类对自身的渺小所萌生的存在主义绝望之间。——马西娅•比约内鲁德 ".concat("您的验证码是：").concat(verifyCode));
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error sending captcha");

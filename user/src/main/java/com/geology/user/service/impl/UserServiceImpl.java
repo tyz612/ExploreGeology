@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.geology.user.common.DistributedIdGenerator;
 import com.geology.user.common.utils.GenerateTokenUtil;
-import com.geology.user.common.utils.JwtUtil;
+//import com.geology.user.common.utils.JwtUtil;
 import com.geology.user.mapper.UserMapper;
 import com.geology.user.model.domain.User;
 import com.geology.user.service.UserService;
@@ -56,7 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private GenerateTokenUtil generateTokenUtil;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private AuthService authService;
     /**
      * 盐值，混淆密码
      */
@@ -160,7 +160,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
 
 //            String token = generateTokenUtil.login(userAccount);
-            String token = jwtUtil.generateToken(userAccount);
+            String token = authService.generateToken(userAccount, encryptPassword);
             this.saveTokenAfterLogin(userAccount, token, 10000);
             log.info(token.concat(" has been saved into redis."));
 
