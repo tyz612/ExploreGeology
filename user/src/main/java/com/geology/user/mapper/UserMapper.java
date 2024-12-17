@@ -15,6 +15,9 @@ public interface UserMapper extends BaseMapper<User> {
     User loginByPassword(@Param("userAccount") String userAccount,
                          @Param("userPassword") String userPassword);
 
+    @Select("select * from userinfo where user_account = #{userAccount}")
+    User getUserInfoByUserAccount(@Param("userAccount") String userAccount);
+
     @Select("SELECT COUNT(*) FROM userinfo where user_account = #{userAccount};")
     Integer checkUserAccount(@Param("userAccount") String userAccount);
 }

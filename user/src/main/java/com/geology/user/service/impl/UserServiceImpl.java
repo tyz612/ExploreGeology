@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.geology.user.common.DistributedIdGenerator;
+import com.geology.user.common.config.PasswordEncoder;
 import com.geology.user.common.utils.GenerateTokenUtil;
-import com.geology.user.common.utils.JwtUtil;
+import com.geology.user.jwt.TokenProvider;
 import com.geology.user.mapper.UserMapper;
 import com.geology.user.model.domain.User;
 import com.geology.user.service.UserService;
@@ -54,9 +55,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private GenerateTokenUtil generateTokenUtil;
-
-    @Autowired
-    private JwtUtil jwtUtil;
     /**
      * 盐值，混淆密码
      */
@@ -102,7 +100,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
         }
         // 2. 加密
-        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        String encryptPassword = DigestUtils.md5DigestAsHex((userPassword).getBytes());
+//        String encryptPassword =
+
+
         // 3. 插入数据
         User user = new User();
         user.setUserAccount(userAccount);
@@ -148,23 +149,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
 
-        User user = userMapper.loginByPassword(userAccount, encryptPassword);
+        User user = userMapper.getUserInfoByUserAccount(userAccount);
+
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
             return "用户名或密码错误";
-        } else {
-            // 3. 用户脱敏
-            User safetyUser = getSafetyUser(user);
-            // 4. 记录用户的登录态
-            request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
-
-//            String token = generateTokenUtil.login(userAccount);
-            String token = jwtUtil.generateToken(userAccount);
-            this.saveTokenAfterLogin(userAccount, token, 10000);
-            log.info(token.concat(" has been saved into redis."));
-
-            return token;
+        }
+        else {
+        if (PasswordEncoder.matches(userPassword, user.getUserPassword())) {
+            // 模拟一个用户的数据 用户id为1  登录端为网页web  角色是admin
+            return TokenProvider.createToken(user.getId().toString(), "web", "admin");
+        }
+        return "error";
         }
     }
 
