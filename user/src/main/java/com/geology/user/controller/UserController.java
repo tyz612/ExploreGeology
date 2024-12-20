@@ -14,6 +14,7 @@ import com.geology.user.model.domain.User;
 import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
 import com.geology.user.service.UserService;
+import com.geology.user.service.impl.SmsSendService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class UserController {
 
     @Autowired
     private GenerateCaptchaUtil generateCaptchaUtil;
+
+    @Autowired
+    private SmsSendService smsSendService;
 
     /**
      * 用户注册
@@ -183,5 +187,11 @@ public class UserController {
     @GetMapping("/test")
     public String hello() {
         return "hello";
+    }
+
+    @GetMapping("/sendSmsCode")
+    public ResponseEntity<String> sendSmsCode(@RequestParam("phoneNumber") String phoneNumber) {
+        smsSendService.sendVerifyCode(phoneNumber);
+        return ResponseEntity.ok().body("success");
     }
 }
