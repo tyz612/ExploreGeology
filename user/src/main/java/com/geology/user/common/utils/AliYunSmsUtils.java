@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AliYunSmsUtils {
+    public static String accessKeyId = "LTAI5tKfKGwzvtVEkYJCEkdX";
+    public static String accessSecret = "I0fP5udXR9K0oTGVJNQF3RWypXwRED";
     public static String signName = "geology0612";
     public static String TemplateCode = "SMS_476835066";
     public static final String PRODUCT = "Dysmsapi";
