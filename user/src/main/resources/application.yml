@@ -27,7 +27,7 @@ spring:
   # DataSource Config
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/account
+    url: jdbc:postgresql://182.92.234.109:35432/account
     username: postgres
     password: qpzm79135
   # session 失效时间

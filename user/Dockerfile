@@ -5,10 +5,10 @@ FROM openjdk:8-jdk-slim
 WORKDIR /app
 
 # 将构建好的 Spring Boot JAR 文件复制到镜像中
-COPY target/data-1.0-SNAPSHOT.jar /app/data-1.0-SNAPSHOT.jar
+COPY target/user-0.0.1-SNAPSHOT.jar /app/user-0.0.1-SNAPSHOT.jar
 
 # 暴露应用程序的端口（默认为 8080）
-EXPOSE 8086
+EXPOSE 3230
 
 # 启动 Spring Boot 应用程序
-CMD ["java", "-jar", "data-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "user-0.0.1-SNAPSHOT.jar"]
