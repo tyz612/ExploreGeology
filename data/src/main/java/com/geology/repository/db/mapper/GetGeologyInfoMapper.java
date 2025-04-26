@@ -1,10 +1,11 @@
 package com.geology.repository.db.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.geology.domain.bean.GeologyBufferStatisticBean;
-import com.geology.domain.bean.GeologyTypeGeometryBean;
-import com.geology.domain.bean.SingleFileGeologyType;
+import com.geology.domain.DTO.PoiLocationDTO;
+import com.geology.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
+import com.geology.repository.db.entity.UserPhotoEntity;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -144,6 +145,24 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "    c.adcode = #{countyCode} and\n" +
             "    ST_Intersects(t.geom, c.geom);")
     SingleFileGeologyType getGeologyFileByCountyCode(@Param("countyCode") Long countyCode);
+
+    @Insert("insert into photos (photo_id, marker_id, user_id, pic_name, file_path, create_time, photo_time, status) " +
+            "values (#{photoId}, #{markerId}, #{userId}, #{picName}, #{filePath}, #{createTime}, #{photoTime}, #{status}) ")
+    Long insertUserPhoto(UserPhotoBean userPhotoBean);
+
+
+    @Insert("insert into picture_locations (id, pic_id, user_id, name, description, create_time, geom) " +
+            "values (#{id}, #{picId}, #{userId}, #{name}, #{description}, #{createTime}, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)) ")
+    Long insertPoi(PoiLocationDTO poiLocationDTO);
+
+
+    @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
+            " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.user_id = #{userId}")
+    List<PoiLocationBean> getPoiByUserId(@Param("userId") Long userId);
+
+    @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
+            " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.name like CONCAT('%', #{poiName}, '%')")
+    List<PoiLocationBean> getPoiByName(@Param("poiName") String poiName);
 
 }
 

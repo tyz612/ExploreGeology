@@ -1,6 +1,7 @@
 package com.geology.user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.geology.user.common.utils.ApiResponse;
 import com.geology.user.common.BaseResponse;
 import com.geology.user.common.ErrorCode;
 import com.geology.user.common.ResultUtils;
@@ -10,6 +11,8 @@ import com.geology.user.common.utils.GenerateTokenUtil;
 import com.geology.user.common.utils.MailClientUtil;
 import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
+import com.geology.user.jwt.JwtUser;
+import com.geology.user.jwt.TokenProvider;
 import com.geology.user.model.domain.User;
 import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
@@ -25,6 +28,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.geology.user.jwt.AuthStorage;
 
 import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
 
@@ -55,6 +60,7 @@ public class UserController {
      * @param userRegisterRequest
      * @return
      */
+    @CrossOrigin(origins = "*")
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         // 校验
@@ -79,6 +85,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
@@ -101,6 +108,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
@@ -116,6 +124,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @GetMapping("/current")
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -130,8 +139,27 @@ public class UserController {
         return ResultUtils.success(safetyUser);
     }
 
-    // https://yupi.icu/
+    @CrossOrigin(origins = "*")
+    @GetMapping("/CurrentUser")
+    public ApiResponse<Long> getInfo() {
+        // 从全局环境中获取用户id
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+        // TODO 校验用户是否合法
 
+        return ApiResponse.success(userId);
+    }
+
+
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/token/validate")
+    public JwtUser tokenValidate(String token) {
+        return TokenProvider.checkToken(token);
+    }
+
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
         if (!isAdmin(request)) {
@@ -146,6 +174,7 @@ public class UserController {
         return ResultUtils.success(list);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
         if (!isAdmin(request)) {
@@ -172,6 +201,7 @@ public class UserController {
         return user != null && user.getUserRole() == UserConstant.ADMIN_ROLE;
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/sendCaptcha")
     public ResponseEntity<String> sendCaptcha(@RequestParam("to") String to) {
         try {
@@ -184,11 +214,13 @@ public class UserController {
     }
 
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/test")
     public String hello() {
         return "hello";
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/sendSmsCode")
     public ResponseEntity<String> sendSmsCode(@RequestParam("phoneNumber") String phoneNumber) {
         smsSendService.sendVerifyCode(phoneNumber);

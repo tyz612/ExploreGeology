@@ -3,7 +3,7 @@ spring:
     host: localhost
     port: 6379
 #    password: yourpassword  # Redis密码，如果需要的话
-    database: 0            # Redis数据库索引，默认为0
+    database: 1            # Redis数据库索引，默认为0
     lettuce:
       pool:
         max-active: 8      # 连接池最大连接数（使用负值表示没有限制）
@@ -34,7 +34,7 @@ spring:
   session:
     timeout: 86400
 server:
-  port: 8386
+  port: 3230
   servlet:
     context-path: /user
 mybatis-plus:

@@ -158,8 +158,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         else {
         if (PasswordEncoder.matches(userPassword, user.getUserPassword())) {
+            String token = TokenProvider.createToken(user.getId().toString(), "web", "admin");
+//            this.saveTokenAfterLogin(user.getUserName().toString(), TokenProvider.createToken(user.getId().toString(), "web", "admin"), 3000);
             // 模拟一个用户的数据 用户id为1  登录端为网页web  角色是admin
-            return TokenProvider.createToken(user.getId().toString(), "web", "admin");
+            return token;
         }
         return "error";
         }
@@ -204,10 +206,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     private void saveTokenAfterLogin(String userAccount, String token, long tokenExpiration) {
-        // 序列化器，确保存储在Redis中的是JSON格式的字符串
-//        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-//        redisTemplate.setKeySerializer(serializer);
-//        redisTemplate.setValueSerializer(serializer);
+         //序列化器，确保存储在Redis中的是JSON格式的字符串
+        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        redisTemplate.setKeySerializer(serializer);
+        redisTemplate.setValueSerializer(serializer);
 
         // 将token作为值，用户ID作为key保存到Redis中
         redisTemplate.opsForValue().set(userAccount, token, tokenExpiration, TimeUnit.MINUTES);

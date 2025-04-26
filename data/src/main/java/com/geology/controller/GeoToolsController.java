@@ -3,6 +3,8 @@ package com.geology.controller;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.geology.common.ApiResponse;
+import com.geology.common.jwt.AuthStorage;
+import com.geology.common.jwt.JwtUser;
 import com.geology.common.utils.CoordinateTransformUtil;
 import com.geology.common.utils.BandReductionUtil;
 import com.geology.domain.DTO.CoordinateDTO;
@@ -206,6 +208,17 @@ public class GeoToolsController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/CurrentUser")
+    public ApiResponse<Long> getInfo() {
+        // 从全局环境中获取用户id
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+        // TODO 校验用户是否合法
+
+        return ApiResponse.success(userId);
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/searchPoi")
     public ApiResponse<Map<String, Object>> searchPoi(@RequestParam(value = "keyWords") String keyWords,
                                                       @RequestParam(value = "key") String key,
@@ -225,4 +238,5 @@ public class GeoToolsController {
 
         return ApiResponse.success(map);
     }
+
 }
