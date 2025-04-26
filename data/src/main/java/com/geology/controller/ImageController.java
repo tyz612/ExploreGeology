@@ -78,7 +78,7 @@ public class ImageController {
     }
 
 //    @CrossOrigin(origins = "*")
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = "http://geologymine.fun", allowCredentials = "true")
     @GetMapping("/getPois")
     public ApiResponse<Map<String, Object>> getPois(@RequestParam(defaultValue = "1") int currentPage,
                                                     @RequestParam(defaultValue = "5") int pageSize) {
@@ -95,7 +95,7 @@ public class ImageController {
         return ApiResponse.success(map);
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = "http://geologymine.fun")
     @GetMapping("/getPoiImage")
     public void getImage(@RequestParam("fileName") String filename, HttpServletResponse response) throws IOException {
         // 构建图片的完整路径
@@ -123,7 +123,7 @@ public class ImageController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+    @CrossOrigin(origins = "http://geologymine.fun", allowCredentials = "true")
     @GetMapping("/getPoisByName")
     public ApiResponse<Map<String, Object>> getPoisByName(@RequestParam(defaultValue = "1") int currentPage,
                                                           @RequestParam(defaultValue = "5") int pageSize,
