@@ -99,7 +99,7 @@ public class ImageController {
     @GetMapping("/getPoiImage")
     public void getImage(@RequestParam("fileName") String filename, HttpServletResponse response) throws IOException {
         // 构建图片的完整路径
-        String imagePath = "D:/projects/data/uploadPic/" + filename;
+        String imagePath = "/data/" + filename;
 
         // 检查文件是否存在
         File file = new File(imagePath);
