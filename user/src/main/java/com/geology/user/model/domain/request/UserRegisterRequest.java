@@ -33,4 +33,15 @@ public class UserRegisterRequest implements Serializable {
      * 星球编号
      */
     private String planetCode;
+
+    /**
+     * 用户手机号
+     */
+    private String phoneNumber;
+
+    /**
+     * 用户昵称
+     */
+    private String userName;
+
 }

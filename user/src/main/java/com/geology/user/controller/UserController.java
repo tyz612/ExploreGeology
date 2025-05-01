@@ -70,11 +70,13 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        String planetCode = userRegisterRequest.getPlanetCode();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
+        String planetCode = "002";
+        String phoneNumber = userRegisterRequest.getPhoneNumber();
+        String userName = userRegisterRequest.getUserName();
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode, userName)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName);
         return ResultUtils.success(result);
     }
 
