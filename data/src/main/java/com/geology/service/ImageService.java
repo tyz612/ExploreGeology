@@ -116,7 +116,7 @@ public class ImageService {
         JwtUser user = AuthStorage.getUser();
         long userId = Long.parseLong(user.getUserId());
 
-        List<PoiLocationBean> poiLocationBeans = getGeologyInfoMapper.getPoiByName(poiName);
+        List<PoiLocationBean> poiLocationBeans = getGeologyInfoMapper.getPoiByName(poiName, userId);
         return poiLocationBeans;
     }
 

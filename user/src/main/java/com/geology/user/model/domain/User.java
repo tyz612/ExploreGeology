@@ -72,13 +72,13 @@ public class User {
      * 创建时间
      */
     @TableField("create_time")
-    private Date createTime;
+    private String createTime;
 
     /**
      *
      */
     @TableField("update_time")
-    private Date updateTime;
+    private String updateTime;
 
     /**
      * 是否删除

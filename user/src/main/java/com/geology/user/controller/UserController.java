@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,10 +76,13 @@ public class UserController {
         String planetCode = "002";
         String phoneNumber = userRegisterRequest.getPhoneNumber();
         String userName = userRegisterRequest.getUserName();
+        LocalDateTime now = LocalDateTime.now(); // 获取当前日期和时间
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String createTime = now.format(formatter);
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode, userName)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName, createTime);
         return ResultUtils.success(result);
     }
 

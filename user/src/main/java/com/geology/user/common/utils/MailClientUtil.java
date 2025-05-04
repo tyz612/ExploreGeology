@@ -46,6 +46,7 @@ public class MailClientUtil {
             helper.setTo(to);
             helper.setSubject(theme);
             helper.setText(content, true);//不加参数默认是文本，加上true之后支持html格式文件
+            String messageLog = helper.getMimeMessage().toString();
             mailSender.send(helper.getMimeMessage());
         } catch (MessagingException e) {
             logger.error("发送邮件失败:" + e.getMessage());
