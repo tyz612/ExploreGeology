@@ -5,9 +5,7 @@ import com.geology.user.common.utils.ApiResponse;
 import com.geology.user.common.BaseResponse;
 import com.geology.user.common.ErrorCode;
 import com.geology.user.common.ResultUtils;
-import com.geology.user.common.bean.MailBean;
 import com.geology.user.common.utils.GenerateCaptchaUtil;
-import com.geology.user.common.utils.GenerateTokenUtil;
 import com.geology.user.common.utils.MailClientUtil;
 import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
@@ -18,9 +16,9 @@ import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
 import com.geology.user.service.UserService;
 import com.geology.user.service.impl.SmsSendService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +26,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.geology.user.jwt.AuthStorage;
@@ -57,6 +55,9 @@ public class UserController {
     @Autowired
     private SmsSendService smsSendService;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     /**
      * 用户注册
      *
@@ -79,10 +80,11 @@ public class UserController {
         LocalDateTime now = LocalDateTime.now(); // 获取当前日期和时间
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String createTime = now.format(formatter);
+        String email = userRegisterRequest.getEmail();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode, userName)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName, createTime);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName, createTime, email);
         return ResultUtils.success(result);
     }
 
@@ -214,7 +216,9 @@ public class UserController {
     public ResponseEntity<String> sendCaptcha(@RequestParam("to") String to) {
         try {
             String verifyCode = generateCaptchaUtil.generateCaptcha();
-            mailClientUtil.sendMail(to, "欢迎来到侏罗纪世界，您的验证码是：", verifyCode);
+            String redisKey = "CAPTCHA:REGISTER:" + to;
+            redisTemplate.opsForValue().set(redisKey, verifyCode, 2, TimeUnit.MINUTES);
+            mailClientUtil.sendMail(to, "欢迎来到奥陶纪世界，您的验证码是：", verifyCode.concat("，验证码2分钟内有效。"));
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error sending captcha");
@@ -234,4 +238,5 @@ public class UserController {
         smsSendService.sendVerifyCode(phoneNumber);
         return ResponseEntity.ok().body("success");
     }
+
 }

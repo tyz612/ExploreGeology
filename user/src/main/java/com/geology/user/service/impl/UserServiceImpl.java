@@ -70,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword, String planetCode,
-                             String phoneNumber, String userName, String createTime) {
+                             String phoneNumber, String userName, String createTime, String email) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -112,6 +112,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setPhone(phoneNumber);
         user.setUserName(userName);
         user.setCreateTime(createTime);
+        user.setEmail(email);
 
         Long taskId = DistributedIdGenerator.getInstance().nextId();
         user.setId(taskId);
