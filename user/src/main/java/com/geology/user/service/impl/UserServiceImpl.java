@@ -171,6 +171,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
     }
 
+    public String userLoginWithMail(String email, String verifyCode, HttpServletRequest request)
+    {
+        if (StringUtils.isAnyBlank(email)) {
+            return "邮箱不可为空";
+        }
+        if (StringUtils.isAnyBlank(verifyCode)) {
+            return "验证码不可为空";
+        }
+
+        User user = userMapper.getUserInfoByUserEmail(email);
+        String redisKey = "CAPTCHA:REGISTER:" + email;
+        String storedCode = redisTemplate.opsForValue().get(redisKey).toString();
+
+        if (storedCode.equals(verifyCode)) {
+            String token = TokenProvider.createToken(user.getId().toString(), "web", "admin");
+            return token;
+        }
+        else
+        {
+            return "验证码错误，请稍后重试";
+        }
+    }
+
+
+
+
     /**
      * 用户脱敏
      *

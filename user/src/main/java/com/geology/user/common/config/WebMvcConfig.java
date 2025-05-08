@@ -17,6 +17,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 拦截的路径
                 .addPathPatterns("/**")
                 // 开放的路径
-                .excludePathPatterns("/user/login", "/user/register", "/user/sendCaptcha");
+                .excludePathPatterns("/user/login", "/user/register", "/user/sendCaptcha", "/user/loginWithMail");
     }
 }

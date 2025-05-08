@@ -18,6 +18,9 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select * from userinfo where user_account = #{userAccount}")
     User getUserInfoByUserAccount(@Param("userAccount") String userAccount);
 
+    @Select("select * from userinfo where email = #{email}")
+    User getUserInfoByUserEmail(@Param("email") String email);
+
     @Select("SELECT COUNT(*) FROM userinfo where user_account = #{userAccount};")
     Integer checkUserAccount(@Param("userAccount") String userAccount);
 }

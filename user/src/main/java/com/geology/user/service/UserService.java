@@ -35,6 +35,8 @@ public interface UserService extends IService<User> {
      */
     String userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
+    String userLoginWithMail(String email, String verifyCode, HttpServletRequest request);
+
     /**
      * 用户脱敏
      *

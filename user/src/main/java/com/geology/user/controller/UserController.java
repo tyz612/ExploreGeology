@@ -12,6 +12,7 @@ import com.geology.user.exception.BusinessException;
 import com.geology.user.jwt.JwtUser;
 import com.geology.user.jwt.TokenProvider;
 import com.geology.user.model.domain.User;
+import com.geology.user.model.domain.request.UserLoginMailRequest;
 import com.geology.user.model.domain.request.UserLoginRequest;
 import com.geology.user.model.domain.request.UserRegisterRequest;
 import com.geology.user.service.UserService;
@@ -107,6 +108,24 @@ public class UserController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         String token = userService.userLogin(userAccount, userPassword, request);
+
+
+        return ResultUtils.success(token);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/loginWithMail")
+    public BaseResponse<String> loginWithMail(@RequestBody UserLoginMailRequest userLoginMailRequest, HttpServletRequest request) {
+        if (userLoginMailRequest == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        String email = userLoginMailRequest.getEmail();
+        String verifyCode = userLoginMailRequest.getVerifyCode();
+        if (StringUtils.isAnyBlank(email, verifyCode)) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        String token = userService.userLoginWithMail(email, verifyCode, request);
 
 
         return ResultUtils.success(token);
@@ -213,15 +232,15 @@ public class UserController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/sendCaptcha")
-    public ResponseEntity<String> sendCaptcha(@RequestParam("to") String to) {
+    public ApiResponse<String> sendCaptcha(@RequestParam("to") String to) {
         try {
             String verifyCode = generateCaptchaUtil.generateCaptcha();
             String redisKey = "CAPTCHA:REGISTER:" + to;
             redisTemplate.opsForValue().set(redisKey, verifyCode, 2, TimeUnit.MINUTES);
             mailClientUtil.sendMail(to, "欢迎来到奥陶纪世界，您的验证码是：", verifyCode.concat("，验证码2分钟内有效。"));
-            return ResponseEntity.ok().body("success");
+            return ApiResponse.success("success");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error sending captcha");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
