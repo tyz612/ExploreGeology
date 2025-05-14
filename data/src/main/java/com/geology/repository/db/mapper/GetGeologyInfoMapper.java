@@ -8,6 +8,7 @@ import com.geology.repository.db.entity.UserPhotoEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -157,12 +158,15 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
 
 
     @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
-            " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.user_id = #{userId}")
+            " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.user_id = #{userId} and p.status = 1")
     List<PoiLocationBean> getPoiByUserId(@Param("userId") Long userId);
 
     @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
             " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.name like CONCAT('%', #{poiName}, '%') and p.user_id = #{userId}")
     List<PoiLocationBean> getPoiByName(@Param("poiName") String poiName, @Param("userId") Long userId);
+
+    @Update("UPDATE picture_locations SET status = 0 WHERE id = #{markerId};")
+    void deletePoi(@Param("markerId") Long markerId);
 
 }
 

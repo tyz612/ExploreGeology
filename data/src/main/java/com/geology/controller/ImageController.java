@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -36,6 +37,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+
+
+
+import net.coobird.thumbnailator.Thumbnails;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 @RestController
 @RequestMapping("/images")
@@ -78,7 +85,7 @@ public class ImageController {
     }
 
 //    @CrossOrigin(origins = "*")
-    @CrossOrigin(origins = "http://geologymine.fun", allowCredentials = "true")
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
     @GetMapping("/getPois")
     public ApiResponse<Map<String, Object>> getPois(@RequestParam(defaultValue = "1") int currentPage,
                                                     @RequestParam(defaultValue = "5") int pageSize) {
@@ -95,7 +102,7 @@ public class ImageController {
         return ApiResponse.success(map);
     }
 
-    @CrossOrigin(origins = "http://geologymine.fun")
+    @CrossOrigin(origins = "https://geologymine.fun")
     @GetMapping("/getPoiImage")
     public void getImage(@RequestParam("fileName") String filename, HttpServletResponse response) throws IOException {
         // 构建图片的完整路径
@@ -123,7 +130,7 @@ public class ImageController {
         }
     }
 
-    @CrossOrigin(origins = "http://geologymine.fun", allowCredentials = "true")
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
     @GetMapping("/getPoisByName")
     public ApiResponse<Map<String, Object>> getPoisByName(@RequestParam(defaultValue = "1") int currentPage,
                                                           @RequestParam(defaultValue = "5") int pageSize,
@@ -140,4 +147,97 @@ public class ImageController {
 
         return ApiResponse.success(map);
     }
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/deletePoi")
+    public ApiResponse<String> deletePoi(@RequestParam("markerId") Long markerId) {
+       imageService.deletePoi(markerId);
+       return ApiResponse.success("deleted");
+    }
+
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getPoiThumbnailImage")
+    public void getImage(
+            @RequestParam("fileName") String filename,
+            @RequestParam(value = "width", defaultValue = "300") int width,
+            @RequestParam(value = "height", defaultValue = "300") int height,
+            HttpServletResponse response
+    ) throws IOException {
+        // 原图路径
+        String originalPath = "/data/" + filename;
+        File originalFile = new File(originalPath);
+
+        // 缩略图路径（在原目录下创建 thumbnails 子目录）
+        String thumbnailDir = "/data/thumbnails/";
+        String thumbnailPath = thumbnailDir + filename;
+
+        // 检查缩略图是否存在
+        File thumbnailFile = new File(thumbnailPath);
+
+        // 如果缩略图不存在，则生成
+        if (!thumbnailFile.exists()) {
+            // 确保缩略图目录存在
+            new File(thumbnailDir).mkdirs();
+
+            try {
+                // 生成缩略图（保持比例，质量压缩）
+                Thumbnails.of(originalFile)
+                        .size(width, height)
+                        .outputQuality(0.8)
+                        .allowOverwrite(true)
+                        .toFile(thumbnailPath);
+            } catch (IOException e) {
+                // 生成失败则返回原图
+                sendOriginalImage(response, originalFile);
+                return;
+            }
+        }
+
+        // 发送缩略图
+        sendThumbnailImage(response, thumbnailFile);
+    }
+
+    private void sendThumbnailImage(HttpServletResponse response, File thumbnailFile) throws IOException {
+        if (!thumbnailFile.exists()) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "缩略图生成失败");
+            return;
+        }
+
+        String mimeType = Files.probeContentType(thumbnailFile.toPath());
+        response.setContentType(mimeType != null ? mimeType : "image/jpeg");
+        response.setContentLengthLong(thumbnailFile.length());
+
+        try (InputStream is = new FileInputStream(thumbnailFile);
+             OutputStream os = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    // 保留原图返回逻辑备用
+    private void sendOriginalImage(HttpServletResponse response, File originalFile) throws IOException {
+        if (!originalFile.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "图片未找到");
+            return;
+        }
+
+        String mimeType = Files.probeContentType(originalFile.toPath());
+        response.setContentType(mimeType != null ? mimeType : "image/jpeg");
+        response.setContentLengthLong(originalFile.length());
+
+        try (InputStream is = new FileInputStream(originalFile);
+             OutputStream os = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
 }

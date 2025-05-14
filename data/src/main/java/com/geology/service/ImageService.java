@@ -120,4 +120,13 @@ public class ImageService {
         return poiLocationBeans;
     }
 
+
+    public void deletePoi(Long markerId)
+    {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+
+        getGeologyInfoMapper.deletePoi(markerId);
+    }
+
 }

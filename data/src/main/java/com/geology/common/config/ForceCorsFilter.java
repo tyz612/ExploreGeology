@@ -14,7 +14,7 @@ public class ForceCorsFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         //线上环境
-        response.setHeader("Access-Control-Allow-Origin", "http://geologymine.fun");
+        response.setHeader("Access-Control-Allow-Origin", "https://geologymine.fun");
 
         //本地测试环境
 //        response.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
