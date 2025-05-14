@@ -152,8 +152,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     Long insertUserPhoto(UserPhotoBean userPhotoBean);
 
 
-    @Insert("insert into picture_locations (id, pic_id, user_id, name, description, create_time, geom) " +
-            "values (#{id}, #{picId}, #{userId}, #{name}, #{description}, #{createTime}, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)) ")
+    @Insert("insert into picture_locations (id, pic_id, user_id, name, description, create_time, status, geom) " +
+            "values (#{id}, #{picId}, #{userId}, #{name}, #{description}, #{createTime}, 1, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)) ")
     Long insertPoi(PoiLocationDTO poiLocationDTO);
 
 
