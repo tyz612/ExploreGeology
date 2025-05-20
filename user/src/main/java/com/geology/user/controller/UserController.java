@@ -232,14 +232,7 @@ public class UserController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/sendCaptcha")
-    public ApiResponse<String> sendCaptcha(@RequestParam("to") String to, HttpServletRequest request) {
-        String allowedIp = "119.80.6.84"; // 允许访问的IP地址
-        String clientIp = request.getHeader("X-Forwarded-For");
-
-        if (!clientIp.equals(allowedIp)) {
-            return ApiResponse.success("not allowed.");
-        }
-
+    public ApiResponse<String> sendCaptcha(@RequestParam("to") String to) {
         try {
             String verifyCode = generateCaptchaUtil.generateCaptcha();
             String redisKey = "CAPTCHA:REGISTER:" + to;

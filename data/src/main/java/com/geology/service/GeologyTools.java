@@ -14,7 +14,7 @@ public interface GeologyTools {
 
     List<GeologyBufferStatisticBean> getGeologyInfoWithinBuffer(double lon, double lat, double rad);
 
-    List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(RectangleDTO rectangleDTO);
+    SingleFileGeologyType getGeologyTypesByRectangle(RectangleDTO rectangleDTO);
 
     SingleFileGeologyType getGeologyFileByRectangle(RectangleDTO rectangleDTO);
 

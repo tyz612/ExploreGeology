@@ -59,11 +59,11 @@ public class GeologyToolsImpl implements GeologyTools {
 
 
     @Override
-    public List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(RectangleDTO rectangleDTO) {
-        List<GeologyTypeGeometryBean> geologyTypeGeometryBeans = getGeologyInfoMapper.getGeologyTypesByRectangle(rectangleDTO.getMinLon(), rectangleDTO.getMinLat(), rectangleDTO.getMaxLon(), rectangleDTO.getMaxLat(), rectangleDTO.getKeywords());
+    public SingleFileGeologyType getGeologyTypesByRectangle(RectangleDTO rectangleDTO) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyTypesByRectangle(rectangleDTO.getMinLon(), rectangleDTO.getMinLat(), rectangleDTO.getMaxLon(), rectangleDTO.getMaxLat(), rectangleDTO.getKeywords());
 
 
-        return geologyTypeGeometryBeans;
+        return singleFileGeologyType;
     }
 
     @Override

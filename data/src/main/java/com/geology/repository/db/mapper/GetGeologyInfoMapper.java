@@ -67,37 +67,64 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
 //                                                             @Param("maxLon") double maxLon,
 //                                                             @Param("maxLat") double maxLat);
 
-    @Select("<script> " +
-            "SELECT\n" +
-            "t.gid,\n" +
-            "t.qduecd,\n" +
-            "t.qduecc,\n" +
-            "t.yshb,\n" +
-            "t.mdaec,\n" +
-            "ST_Area(ST_Intersection(t.geom, r.rect))*10000 AS intersection_area,\n" +
-            "json_build_object(\n" +
-            "    'type', 'Feature',\n" +
+//    @Select("<script> " +
+//            "SELECT\n" +
+//            "t.gid,\n" +
+//            "t.qduecd,\n" +
+//            "t.qduecc,\n" +
+//            "t.yshb,\n" +
+//            "t.mdaec,\n" +
+//            "ST_Area(ST_Intersection(t.geom, r.rect))*10000 AS intersection_area,\n" +
+//            "json_build_object(\n" +
+//            "    'type', 'Feature',\n" +
+//            "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
+//            "        'properties', json_build_object(\n" +
+//            "      'gid', t.gid,\n" +
+//            "      'qduecd', t.qduecd,\n" +
+//            "      'qduecc', t.qduecc,\n" +
+//            "      'yshb', t.yshb,\n" +
+//            "      'mdaec', t.mdaec\n" +
+//            ")\n" +
+//            "  ) ::text AS geojson_feature\n" +
+//            "FROM\n" +
+//            "merge t,\n" +
+//            "  (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
+//            "WHERE\n" +
+//            "<if test='keywords != null'> t.qduecd like CONCAT('%', #{keywords}, '%') and </if>" +
+//            "ST_Intersects(t.geom, r.rect);" +
+//            "</script>")
+//    List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(@Param("minLon") double minLon,
+//                                                             @Param("minLat") double minLat,
+//                                                             @Param("maxLon") double maxLon,
+//                                                             @Param("maxLat") double maxLat,
+//                                                             @Param("keywords") String keywords);
+
+
+    @Select("SELECT\n" +
+            "    json_build_object(\n" +
+            "            'type', 'FeatureCollection',\n" +
+            "            'features', json_agg(json_build_object(\n" +
+            "            'type', 'Feature',\n" +
             "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
-            "        'properties', json_build_object(\n" +
-            "      'gid', t.gid,\n" +
-            "      'qduecd', t.qduecd,\n" +
-            "      'qduecc', t.qduecc,\n" +
-            "      'yshb', t.yshb,\n" +
-            "      'mdaec', t.mdaec\n" +
-            ")\n" +
-            "  ) ::text AS geojson_feature\n" +
+            "            'properties', json_build_object(\n" +
+            "                    'gid', t.gid,\n" +
+            "                    'qduecd', t.qduecd,\n" +
+            "                    'qduecc', t.qduecc,\n" +
+            "                    'yshb', t.yshb,\n" +
+            "                    'mdaec', t.mdaec\n" +
+            "                          )\n" +
+            "                                 ))\n" +
+            "    )::text AS geojson_featurecollection\n" +
             "FROM\n" +
-            "merge t,\n" +
-            "  (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
+            "    merge t,\n" +
+            "    (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
             "WHERE\n" +
-            "<if test='keywords != null'> t.qduecd like CONCAT('%', #{keywords}, '%') and </if>" +
-            "ST_Intersects(t.geom, r.rect);" +
-            "</script>")
-    List<GeologyTypeGeometryBean> getGeologyTypesByRectangle(@Param("minLon") double minLon,
-                                                             @Param("minLat") double minLat,
-                                                             @Param("maxLon") double maxLon,
-                                                             @Param("maxLat") double maxLat,
-                                                             @Param("keywords") String keywords);
+            "    ST_Intersects(t.geom, r.rect) and t.qduecd like CONCAT('%', #{keywords}, '%');")
+    SingleFileGeologyType getGeologyTypesByRectangle(@Param("minLon") double minLon,
+                                                     @Param("minLat") double minLat,
+                                                     @Param("maxLon") double maxLon,
+                                                     @Param("maxLat") double maxLat,
+                                                     @Param("keywords") String keywords);
 
 
     @Select("SELECT\n" +

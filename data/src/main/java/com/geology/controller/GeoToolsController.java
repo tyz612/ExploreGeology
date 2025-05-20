@@ -173,12 +173,12 @@ public class GeoToolsController {
     }
 
     @PostMapping("/getGeologyInfoByRectangle")
-    public ApiResponse<List<GeologyTypeGeometryBean>> getGeologyInfoByRectangle(@RequestBody RectangleDTO rectangleDTO) {
+    public ApiResponse<SingleFileGeologyType> getGeologyInfoByRectangle(@RequestBody RectangleDTO rectangleDTO) {
         if (rectangleDTO == null) {
             throw new RuntimeException("Params empty.");
         }
 
-        List<GeologyTypeGeometryBean> geologyTypeGeometryBeans = geologyTools.getGeologyTypesByRectangle(rectangleDTO);
+        SingleFileGeologyType geologyTypeGeometryBeans = geologyTools.getGeologyTypesByRectangle(rectangleDTO);
 
         return ApiResponse.success(geologyTypeGeometryBeans);
     }
