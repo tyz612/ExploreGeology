@@ -119,7 +119,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "    merge t,\n" +
             "    (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
             "WHERE\n" +
-            "    ST_Intersects(t.geom, r.rect) and t.qduecd like CONCAT('%', #{keywords}, '%');")
+//            "    ST_Intersects(t.geom, r.rect) and t.qduecd like CONCAT('%', #{keywords}, '%');")
+            "    ST_Intersects(t.geom, r.rect) and t.qduecd = #{keywords};")
     SingleFileGeologyType getGeologyTypesByRectangle(@Param("minLon") double minLon,
                                                      @Param("minLat") double minLat,
                                                      @Param("maxLon") double maxLon,
