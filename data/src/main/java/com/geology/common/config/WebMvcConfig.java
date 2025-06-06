@@ -17,6 +17,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 拦截的路径
                 .addPathPatterns("/**")
                 // 开放的路径
-                .excludePathPatterns("/images/getPoiImage", "/images/getPoiThumbnailImage");
+                .excludePathPatterns("/geotools/rectifyByGCP", "/images/getPoiImage", "/images/getPoiThumbnailImage");
     }
 }
