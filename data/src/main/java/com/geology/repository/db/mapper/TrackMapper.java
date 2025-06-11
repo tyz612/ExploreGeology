@@ -3,6 +3,7 @@ package com.geology.repository.db.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.DTO.PoiLocationDTO;
 import com.geology.domain.bean.PoiLocationBean;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
 import com.geology.domain.bean.UserPhotoBean;
 import com.geology.repository.db.entity.GeologyInfoEntity;
@@ -29,4 +30,37 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
 
     @Update("UPDATE tracks SET status = 0 WHERE id = #{trackId};")
     void deleteTrack(@Param("trackId") Long trackId);
+
+    @Select("SELECT\n" +
+            "    json_build_object(\n" +
+            "            'type', 'FeatureCollection',\n" +
+            "            'features', COALESCE(\n" +
+            "                    json_agg(\n" +
+            "                            json_build_object(\n" +
+            "                                    'type', 'Feature',\n" +
+            "                                    'geometry', ST_AsGeoJSON(\n" +
+            "                                            ST_Multi(ST_Intersection(g.geom, buffer_geom))\n" +
+            "                                                )::json,\n" +
+            "                                    'properties', json_build_object(\n" +
+            "                                            'gid', g.gid,\n" +
+            "                                            'qduecd', g.qduecd,\n" +
+            "                                            'qduecc', g.qduecc,\n" +
+            "                                            'yshb', g.yshb,\n" +
+            "                                            'mdaec', g.mdaec\n" +
+            "                                                  )\n" +
+            "                            )\n" +
+            "                    ),\n" +
+            "                    '[]'::json  -- 处理无结果的情况\n" +
+            "                        )\n" +
+            "    )::text AS geojson_featurecollection\n" +
+            "FROM (\n" +
+            "         SELECT\n" +
+            "             ST_Buffer(t.geom::geography, #{buffer})::geometry AS buffer_geom\n" +
+            "         FROM tracks t\n" +
+            "         WHERE t.id = #{trackId}\n" +
+            "     ) AS buffer\n" +
+            "         JOIN merge g ON ST_Intersects(buffer.buffer_geom, g.geom);")
+    SingleFileGeologyType getGeologyFileByTrackBuffer(@Param("trackId") Long trackId,
+                                                      @Param("buffer") Integer buffer);
+
 }

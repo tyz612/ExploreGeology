@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,9 @@ public class GeoToolsController {
 
     @Autowired
     private PoiSearch poiSearch;
+
+    @Autowired
+    private GeoJsonService geoJsonService;
 
     /**
      * 裁切影像接口
@@ -237,6 +242,43 @@ public class GeoToolsController {
         map.put("pageSize", pageSize);
 
         return ApiResponse.success(map);
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @GetMapping("/getGeologyImage")
+    public void getGeologyImage(@RequestParam("fileName") String filename, HttpServletResponse response) throws IOException {
+        // 构建图片的完整路径
+        String imagePath = "/data/gpics/" + filename;
+
+        // 检查文件是否存在
+        File file = new File(imagePath);
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "图片未找到");
+            return;
+        }
+
+        // 设置响应头
+        response.setContentType("image/jpeg"); // 根据图片类型设置正确的 MIME 类型
+        response.setContentLengthLong(file.length());
+
+        // 写入文件内容
+        try (InputStream inputStream = new FileInputStream(file);
+             OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @GetMapping("/getGeojson")
+    public ApiResponse<String> getGeoJson() {
+        // 读取GeoJSON文件内容
+        String geoJsonContent = geoJsonService.readGeoJsonFile("/data/gCurrent.geojson");
+        return ApiResponse.success(geoJsonContent);
     }
 
 }

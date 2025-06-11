@@ -1,5 +1,7 @@
 package com.geology.service;
 
+import com.geology.domain.DTO.RectangleDTO;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,4 +15,6 @@ public interface TrackService {
     void deleteTrack(Long trackId);
 
     List<TrackBean> getTracksByName(String trackName);
+
+    SingleFileGeologyType getGeologyFileByTrackBuffer(Long trackId, Integer buffer);
 }

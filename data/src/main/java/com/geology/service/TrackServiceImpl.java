@@ -5,6 +5,7 @@ import com.geology.common.jwt.JwtUser;
 import com.geology.common.utils.GeologyDistributedIdGenerator;
 import com.geology.common.utils.KmlParseUtil;
 import com.geology.domain.bean.PoiLocationBean;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
 import com.geology.repository.db.entity.TrackEntity;
 import com.geology.repository.db.mapper.TrackMapper;
@@ -73,5 +74,13 @@ public class TrackServiceImpl implements TrackService {
 
         List<TrackBean> trackBeans = trackMapper.getTrackByName(trackName, userId);
         return trackBeans;
+    }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByTrackBuffer(Long trackId, Integer buffer) {
+        SingleFileGeologyType singleFileGeologyType = trackMapper.getGeologyFileByTrackBuffer(trackId, buffer);
+
+
+        return singleFileGeologyType;
     }
 }

@@ -195,7 +195,6 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
 
     @Update("UPDATE picture_locations SET status = 0 WHERE id = #{markerId};")
     void deletePoi(@Param("markerId") Long markerId);
-
 }
 
 

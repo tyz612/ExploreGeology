@@ -2,7 +2,9 @@ package com.geology.controller;
 
 import com.geology.common.ApiResponse;
 import com.geology.common.utils.PaginationUtil;
+import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.PoiLocationBean;
+import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
 import com.geology.repository.db.entity.TrackEntity;
 import com.geology.service.TrackService;
@@ -83,6 +85,14 @@ public class TrackController {
         map.put("total", trackBeans.size());
 
         return ApiResponse.success(map);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getGeologyFileByTrackBuffer")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByTrackBuffer(@RequestParam("trackId") Long trackId, @RequestParam(defaultValue = "1000") int buffer) {
+        SingleFileGeologyType singleFileGeologyType = trajectoryService.getGeologyFileByTrackBuffer(trackId, buffer);
+
+        return ApiResponse.success(singleFileGeologyType);
     }
 
 }
