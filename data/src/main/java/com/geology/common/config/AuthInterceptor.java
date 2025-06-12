@@ -31,6 +31,19 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
+
+        if((!(request.getQueryString() == null) && request.getQueryString().contains("token")))
+        {
+            String tokenQuery = request.getQueryString().split("token=")[1];
+            JwtUser jwtUser = TokenProvider.checkToken(tokenQuery);
+            // 是否认证通过
+            if (jwtUser.isValid()) {
+                // 保存授权信息
+                AuthStorage.setUser(token, jwtUser);
+                return true;
+            }
+        }
+
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write("请先登录！");
         return false;
