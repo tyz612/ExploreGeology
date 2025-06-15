@@ -17,4 +17,6 @@ public interface TrackService {
     List<TrackBean> getTracksByName(String trackName);
 
     SingleFileGeologyType getGeologyFileByTrackBuffer(Long trackId, Integer buffer);
+
+    SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords);
 }

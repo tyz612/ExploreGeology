@@ -95,5 +95,14 @@ public class TrackController {
         return ApiResponse.success(singleFileGeologyType);
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getGeologyFileByTrackBufferName")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByTrackBufferName(@RequestParam("trackId") Long trackId, @RequestParam(defaultValue = "1000") int buffer,
+                                                                              @RequestParam("keyWords") String keyWords) {
+        SingleFileGeologyType singleFileGeologyType = trajectoryService.getGeologyFileByTrackBufferName(trackId, buffer, keyWords);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
 }
 
