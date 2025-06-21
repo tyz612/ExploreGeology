@@ -4,15 +4,14 @@ import com.geology.common.jwt.AuthStorage;
 import com.geology.common.jwt.JwtUser;
 import com.geology.common.utils.GeologyDistributedIdGenerator;
 import com.geology.common.utils.KmlParseUtil;
-import com.geology.domain.bean.PoiLocationBean;
 import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
+import com.geology.domain.bean.TrackGeomBean;
 import com.geology.repository.db.entity.TrackEntity;
 import com.geology.repository.db.mapper.TrackMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -70,10 +69,19 @@ public class TrackServiceImpl implements TrackService {
     @Override
     public List<TrackBean> getTracksByName(String trackName) {
         JwtUser user = AuthStorage.getUser();
-        long userId = Long.parseLong(user.getUserId());
+        Long userId = Long.parseLong(user.getUserId());
 
         List<TrackBean> trackBeans = trackMapper.getTrackByName(trackName, userId);
         return trackBeans;
+    }
+
+    @Override
+    public TrackGeomBean getTrackGeomById(Long trackId) {
+        JwtUser user = AuthStorage.getUser();
+        Long userId = Long.parseLong(user.getUserId());
+
+        TrackGeomBean trackGeomBean = trackMapper.getTrackGeomById(trackId, userId);
+        return trackGeomBean;
     }
 
     @Override

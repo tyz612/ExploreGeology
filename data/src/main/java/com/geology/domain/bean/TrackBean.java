@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Data
 @Component
+
 public class TrackBean {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;

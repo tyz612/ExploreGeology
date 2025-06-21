@@ -6,6 +6,7 @@ import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.PoiLocationBean;
 import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.domain.bean.TrackBean;
+import com.geology.domain.bean.TrackGeomBean;
 import com.geology.repository.db.entity.TrackEntity;
 import com.geology.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +86,15 @@ public class TrackController {
         map.put("total", trackBeans.size());
 
         return ApiResponse.success(map);
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getTrackGeomById")
+    public ApiResponse<TrackGeomBean> getTrackGeomById(@RequestParam("trackId") Long trackId) {
+        TrackGeomBean trackGeomBean = trajectoryService.getTrackGeomById(trackId);
+
+        return ApiResponse.success(trackGeomBean);
     }
 
     @CrossOrigin(origins = "*")

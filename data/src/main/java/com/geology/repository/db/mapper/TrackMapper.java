@@ -2,10 +2,7 @@ package com.geology.repository.db.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.DTO.PoiLocationDTO;
-import com.geology.domain.bean.PoiLocationBean;
-import com.geology.domain.bean.SingleFileGeologyType;
-import com.geology.domain.bean.TrackBean;
-import com.geology.domain.bean.UserPhotoBean;
+import com.geology.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.entity.TrackEntity;
 import org.apache.ibatis.annotations.Insert;
@@ -25,8 +22,12 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
     List<TrackBean> getTracksByUserId(@Param("userId") Long userId);
 
     @Select("SELECT t.id as id, t.user_id as userId, t.description as description, t.name as name, t.create_time as createTime,\n" +
-            " ST_AsGeoJSON(t.geom) as geom, t.start_time as startTime, t.end_time as endTime, t.status as status, t.distance as distance, t.min_altitude as minAltitude, t.max_altitude as maxAltitude FROM tracks t  WHERE t.name like CONCAT('%', #{trackName}, '%') and t.user_id = #{userId} and t.status = 1")
+            " t.start_time as startTime, t.end_time as endTime, t.status as status, t.distance as distance, t.min_altitude as minAltitude, t.max_altitude as maxAltitude FROM tracks t  WHERE t.name like CONCAT('%', #{trackName}, '%') and t.user_id = #{userId} and t.status = 1")
     List<TrackBean> getTrackByName(@Param("trackName") String trackName, @Param("userId") Long userId);
+
+
+    @Select("SELECT t.id as id, t.user_id as userId, ST_AsGeoJSON(t.geom) as geom FROM tracks t WHERE t.id = #{trackId} and t.user_id = #{userId} and t.status = 1")
+    TrackGeomBean getTrackGeomById(@Param("trackId") Long trackId, @Param("userId") Long userId);
 
     @Update("UPDATE tracks SET status = 0 WHERE id = #{trackId};")
     void deleteTrack(@Param("trackId") Long trackId);
