@@ -120,12 +120,13 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "    (SELECT ST_MakeEnvelope(#{minLon}, #{minLat}, #{maxLon}, #{maxLat}, 4326) AS rect) AS r\n" +
             "WHERE\n" +
 //            "    ST_Intersects(t.geom, r.rect) and t.qduecd like CONCAT('%', #{keywords}, '%');")
-            "    ST_Intersects(t.geom, r.rect) and t.qduecd = #{keywords};")
+            "    ST_Intersects(t.geom, r.rect) and t.qduecd = #{keywords} and t.tong = #{tong};")
     SingleFileGeologyType getGeologyTypesByRectangle(@Param("minLon") double minLon,
                                                      @Param("minLat") double minLat,
                                                      @Param("maxLon") double maxLon,
                                                      @Param("maxLat") double maxLat,
-                                                     @Param("keywords") String keywords);
+                                                     @Param("keywords") String keywords,
+                                                     @Param("tong") String tong);
 
 
     @Select("SELECT\n" +
@@ -135,11 +136,12 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "            'type', 'Feature',\n" +
             "            'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, r.rect))::json,\n" +
             "            'properties', json_build_object(\n" +
-            "                    'gid', t.gid,\n" +
+            "                    'lower_age', t.lower_age,\n" +
+            "                    'upper_age', t.upper_age,\n" +
             "                    'qduecd', t.qduecd,\n" +
             "                    'qduecc', t.qduecc,\n" +
-            "                    'yshb', t.yshb,\n" +
-            "                    'mdaec', t.mdaec\n" +
+            "                    'seq', t.seq,\n" +
+            "                    'tong', t.tong\n" +
             "                          )\n" +
             "                                 ))\n" +
             "    )::text AS geojson_featurecollection\n" +

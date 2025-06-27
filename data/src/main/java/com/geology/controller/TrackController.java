@@ -108,8 +108,8 @@ public class TrackController {
     @CrossOrigin(origins = "*")
     @GetMapping("/getGeologyFileByTrackBufferName")
     public ApiResponse<SingleFileGeologyType> getGeologyFileByTrackBufferName(@RequestParam("trackId") Long trackId, @RequestParam(defaultValue = "1000") int buffer,
-                                                                              @RequestParam("keyWords") String keyWords) {
-        SingleFileGeologyType singleFileGeologyType = trajectoryService.getGeologyFileByTrackBufferName(trackId, buffer, keyWords);
+                                                                              @RequestParam("keyWords") String keyWords, @RequestParam("tong") String tong) {
+        SingleFileGeologyType singleFileGeologyType = trajectoryService.getGeologyFileByTrackBufferName(trackId, buffer, keyWords, tong);
 
         return ApiResponse.success(singleFileGeologyType);
     }

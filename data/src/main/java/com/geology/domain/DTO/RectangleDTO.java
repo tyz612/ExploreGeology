@@ -13,4 +13,6 @@ public class RectangleDTO {
     private double maxLat;
 
     private String keywords;
+
+    private String tong;
 }

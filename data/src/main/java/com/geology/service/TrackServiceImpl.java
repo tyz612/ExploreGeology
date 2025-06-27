@@ -93,8 +93,8 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords) {
-        SingleFileGeologyType singleFileGeologyType = trackMapper.getGeologyFileByTrackBufferName(trackId, buffer, keyWords);
+    public SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords, String tong) {
+        SingleFileGeologyType singleFileGeologyType = trackMapper.getGeologyFileByTrackBufferName(trackId, buffer, keyWords, tong);
 
 
         return singleFileGeologyType;

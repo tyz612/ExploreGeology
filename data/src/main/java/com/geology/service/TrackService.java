@@ -21,5 +21,5 @@ public interface TrackService {
 
     SingleFileGeologyType getGeologyFileByTrackBuffer(Long trackId, Integer buffer);
 
-    SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords);
+    SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords, String tong);
 }

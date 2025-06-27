@@ -43,11 +43,12 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
             "                                            ST_Multi(ST_Intersection(g.geom, buffer_geom))\n" +
             "                                                )::json,\n" +
             "                                    'properties', json_build_object(\n" +
-            "                                            'gid', g.gid,\n" +
+            "                                            'lower_age', g.lower_age,\n" +
+            "                                            'upper_age', g.upper_age,\n" +
             "                                            'qduecd', g.qduecd,\n" +
             "                                            'qduecc', g.qduecc,\n" +
-            "                                            'yshb', g.yshb,\n" +
-            "                                            'mdaec', g.mdaec\n" +
+            "                                            'tong', g.tong,\n" +
+            "                                            'seq', g.seq\n" +
             "                                                  )\n" +
             "                            )\n" +
             "                    ),\n" +
@@ -93,9 +94,10 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
             "         FROM tracks t \n" +
             "         WHERE t.id = #{trackId}\n" +
             "     ) AS buffer\n" +
-            "         JOIN merge g ON ST_Intersects(buffer.buffer_geom, g.geom) and g.qduecd = #{keywords};")
+            "         JOIN merge g ON ST_Intersects(buffer.buffer_geom, g.geom) and g.qduecd = #{keywords} and g.tong = #{tong};")
     SingleFileGeologyType getGeologyFileByTrackBufferName(@Param("trackId") Long trackId,
                                                           @Param("buffer") Integer buffer,
-                                                          @Param("keywords") String keywords);
+                                                          @Param("keywords") String keywords,
+                                                          @Param("tong") String tong);
 
 }
