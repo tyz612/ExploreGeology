@@ -7,10 +7,7 @@ import com.geology.common.jwt.AuthStorage;
 import com.geology.common.jwt.JwtUser;
 import com.geology.common.utils.CoordinateTransformUtil;
 import com.geology.common.utils.BandReductionUtil;
-import com.geology.domain.DTO.CoordinateDTO;
-import com.geology.domain.DTO.RectangleDTO;
-import com.geology.domain.DTO.RectifyDTO;
-import com.geology.domain.DTO.SingleCoordinateTransformDTO;
+import com.geology.domain.DTO.*;
 import com.geology.domain.bean.*;
 //import geologyTest.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
@@ -196,6 +193,32 @@ public class GeoToolsController {
         }
 
         SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByRectangle(rectangleDTO);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileByPolygon")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygon(@RequestBody PolygonGeojsonDTO polygonGeojsonDTO) {
+        if (polygonGeojsonDTO == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygon(polygonGeojsonDTO);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileByPolygonName")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygonName(@RequestBody PolygonGeojsonDTO polygonGeojsonDTO) {
+        if (polygonGeojsonDTO == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonByName(polygonGeojsonDTO);
 
         return ApiResponse.success(singleFileGeologyType);
     }

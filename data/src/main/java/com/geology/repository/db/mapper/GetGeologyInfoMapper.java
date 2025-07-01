@@ -156,6 +156,50 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
                                                     @Param("maxLat") double maxLat);
 
 
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t,\n" +
+            "(SELECT ST_Transform(ST_GeomFromGeoJSON(#{polygonGeoJSON}), 4326) AS geom) AS poly\n" +
+            "WHERE ST_Intersects(t.geom, poly.geom);")
+    SingleFileGeologyType getGeologyFileByPolygon(@Param("polygonGeoJSON") String polygonGeoJSON);
+
+
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t,\n" +
+            "(SELECT ST_Transform(ST_GeomFromGeoJSON(#{polygonGeoJSON}), 4326) AS geom) AS poly\n" +
+            "WHERE ST_Intersects(t.geom, poly.geom) and t.qduecd = #{keywords} and t.tong = #{tong};")
+    SingleFileGeologyType getGeologyFileByPolygonByName(@Param("polygonGeoJSON") String polygonGeoJSON,
+                                                        @Param("keywords") String keywords,
+                                                        @Param("tong") String tong);
+
+
     @Select("SELECT\n" +
             "    json_build_object(\n" +
             "            'type', 'FeatureCollection',\n" +

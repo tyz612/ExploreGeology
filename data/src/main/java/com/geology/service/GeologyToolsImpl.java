@@ -1,26 +1,18 @@
 package com.geology.service;
 
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.geology.common.utils.DownloadFileUtil;
-import com.geology.common.utils.PaginationUtil;
+import com.geology.domain.DTO.PolygonGeojsonDTO;
 import com.geology.domain.DTO.RectangleDTO;
-import com.geology.domain.bean.EnvolopeBean;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
-import com.geology.domain.bean.GeologyTypeGeometryBean;
 import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -70,6 +62,20 @@ public class GeologyToolsImpl implements GeologyTools {
     public SingleFileGeologyType getGeologyFileByRectangle(RectangleDTO rectangleDTO) {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByRectangle(rectangleDTO.getMinLon(), rectangleDTO.getMinLat(), rectangleDTO.getMaxLon(), rectangleDTO.getMaxLat());
 
+        return singleFileGeologyType;
+    }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygon(PolygonGeojsonDTO polygonGeoJSON) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygon(polygonGeoJSON.getPolygonGeoJSON());
+
+        return singleFileGeologyType;
+    }
+
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygonByName(PolygonGeojsonDTO polygonGeoJSON) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonByName(polygonGeoJSON.getPolygonGeoJSON(), polygonGeoJSON.getKeywords(), polygonGeoJSON.getTong());
 
         return singleFileGeologyType;
     }
