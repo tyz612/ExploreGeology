@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.DTO.PoiLocationDTO;
 import com.geology.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
+import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.entity.TrackEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -99,5 +100,9 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
                                                           @Param("buffer") Integer buffer,
                                                           @Param("keywords") String keywords,
                                                           @Param("tong") String tong);
+
+
+
+
 
 }

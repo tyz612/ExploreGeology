@@ -7,20 +7,26 @@ import com.geology.common.jwt.AuthStorage;
 import com.geology.common.jwt.JwtUser;
 import com.geology.common.utils.CoordinateTransformUtil;
 import com.geology.common.utils.BandReductionUtil;
+import com.geology.common.utils.PaginationUtil;
+import com.geology.common.utils.Shape2PostgisUtil;
 import com.geology.domain.DTO.*;
 import com.geology.domain.bean.*;
 //import geologyTest.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
+import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
+import com.geology.repository.db.mapper.TrackMapper;
 import com.geology.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.GCP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +55,9 @@ public class GeoToolsController {
 
     @Autowired
     private GeoJsonService geoJsonService;
+
+    @Autowired
+    private PolygonService polygonService;
 
     /**
      * 裁切影像接口
@@ -302,6 +311,76 @@ public class GeoToolsController {
         // 读取GeoJSON文件内容
         String geoJsonContent = geoJsonService.readGeoJsonFile("/data/gCurrent.geojson");
         return ApiResponse.success(geoJsonContent);
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @PostMapping("/savePolygon")
+    public ApiResponse<String> savePolygon(@RequestParam("name") String name,
+                                           @RequestParam("description") String description,
+                                           @RequestParam("file") MultipartFile file) throws IOException {
+        try {
+            Long polygonId = polygonService.savePolygon(name, description, file);
+
+            return ApiResponse.success(polygonId.toString());
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getPolygons")
+    public ApiResponse<Map<String, Object>> getPolygons(@RequestParam(defaultValue = "1") int currentPage,
+                                                        @RequestParam(defaultValue = "5") int pageSize) {
+        List<PolygonBean> polygonBeans = polygonService.getPolygonsByUserId();
+        // 获取分页数据
+        List<PolygonBean> paginatedList = PaginationUtil.paginate(polygonBeans, currentPage, pageSize);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", paginatedList);
+        map.put("currentPage", currentPage);
+        map.put("pageSize", pageSize);
+        map.put("total", polygonBeans.size());
+
+        return ApiResponse.success(map);
+    }
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/deletePolygon")
+    public ApiResponse<String> deletePolygon(@RequestParam("polygonId") Long polygonId) {
+        polygonService.deleteTrack(polygonId);
+        return ApiResponse.success("deleted");
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getPolygonsByGroupId")
+    public ApiResponse<List<PolygonBean>> getPolygonsByGroupId(@RequestParam("groupId") Long groupId) {
+        List<PolygonBean> polygonBeans = polygonService.getPolygonsByGroupId(groupId);
+        // 获取分页数据
+
+        return ApiResponse.success(polygonBeans);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getGeologyFileByPolygonId")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygonId(@RequestParam("groupId") Long groupId) {
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonId(groupId);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getGeologyFileByPolygonIdName")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygonIdName(@RequestParam("groupId") Long groupId,
+                                                                            @RequestParam("keyword") String keyword,
+                                                                            @RequestParam("tong") String tong) {
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonName(groupId, keyword, tong);
+
+        return ApiResponse.success(singleFileGeologyType);
     }
 
 }

@@ -2,6 +2,7 @@ package com.geology.service;
 
 import com.geology.common.utils.DownloadFileUtil;
 import com.geology.domain.DTO.PolygonGeojsonDTO;
+import com.geology.domain.DTO.PolygonInfoDTO;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
 import com.geology.domain.bean.SingleFileGeologyType;
@@ -84,6 +85,22 @@ public class GeologyToolsImpl implements GeologyTools {
     public SingleFileGeologyType getGeologyFileByCountyCode(String countyCode) {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByCountyCode(Long.parseLong(countyCode));
         downloadFileUtil.writeGeoJsonToFile(singleFileGeologyType.getGeojsonFeaturecollection().toString(), geoJsonFilePath.concat(countyCode).concat(".json"));
+
+        return singleFileGeologyType;
+    }
+
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygonId(Long polygonId) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonId(polygonId);
+
+        return singleFileGeologyType;
+    }
+
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygonName(Long polygonId, String keyword, String tong) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonName(polygonId, keyword, tong);
 
         return singleFileGeologyType;
     }

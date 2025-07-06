@@ -1,6 +1,7 @@
 package com.geology.service;
 
 import com.geology.domain.DTO.PolygonGeojsonDTO;
+import com.geology.domain.DTO.PolygonInfoDTO;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.EnvolopeBean;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
@@ -21,8 +22,11 @@ public interface GeologyTools {
 
     SingleFileGeologyType getGeologyFileByPolygon(PolygonGeojsonDTO polygonGeoJSON);
 
+    SingleFileGeologyType getGeologyFileByPolygonId(Long polygonId);
+
     SingleFileGeologyType getGeologyFileByPolygonByName(PolygonGeojsonDTO polygonGeoJSON);
 
     SingleFileGeologyType getGeologyFileByCountyCode(String countyCode);
 
+    SingleFileGeologyType getGeologyFileByPolygonName(Long polygonId, String keyword, String tong);
 }

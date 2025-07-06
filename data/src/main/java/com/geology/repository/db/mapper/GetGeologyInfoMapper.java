@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.DTO.PoiLocationDTO;
 import com.geology.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
+import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.entity.UserPhotoEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -241,6 +242,67 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
 
     @Update("UPDATE picture_locations SET status = 0 WHERE id = #{markerId};")
     void deletePoi(@Param("markerId") Long markerId);
+
+
+
+    @Insert("insert into polygon (id, user_id, description, create_time, polygon_name, group_id, status, geom) " +
+            "values (#{id}, #{userId}, #{description}, #{createTime}, #{polygonName}, #{groupid}, 1, ST_GeomFromText(#{geom}))")
+    void insertPolygon(PolygonEntity polygonEntity);
+
+
+    @Select("SELECT distinct t.group_id as groupid, t.description as description, t.polygon_name as polygonName, t.create_time as createTime,\n"+
+            " t.status as status FROM polygon t  WHERE t.user_id = #{userId} and t.status = 1")
+    List<PolygonBean> getPolygonsByUserId(@Param("userId") Long userId);
+
+
+    @Select("SELECT  ST_AsGeoJSON(t.geom) as geom FROM polygon t  WHERE t.group_id = #{groupId} and t.status = 1")
+    List<PolygonBean> getPolygonsByGroupId(@Param("groupId") Long groupId);
+
+
+    @Update("UPDATE polygon SET status = 0 WHERE group_id = #{polygonId};")
+    void deletePolygon(@Param("polygonId") Long polygonId);
+
+
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t, polygon poly\n" +
+            " WHERE ST_Intersects(t.geom, poly.geom) and t.qduecd = #{keywords} and t.tong = #{tong} and poly.group_id = #{groupId};")
+    SingleFileGeologyType getGeologyFileByPolygonName(@Param("groupId") Long groupId,
+                                                      @Param("keywords") String keywords,
+                                                      @Param("tong") String tong);
+
+
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t, polygon poly\n" +
+            " WHERE ST_Intersects(t.geom, poly.geom) and poly.group_id = #{groupId};")
+    SingleFileGeologyType getGeologyFileByPolygonId(@Param("groupId") Long groupId);
 }
 
 
