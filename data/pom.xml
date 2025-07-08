@@ -198,6 +198,14 @@
             <version>27.0</version>
         </dependency>
 
+
+        <!-- JSON 处理 -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>

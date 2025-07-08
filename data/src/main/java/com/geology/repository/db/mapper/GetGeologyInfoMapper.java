@@ -303,6 +303,11 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "FROM merge t, polygon poly\n" +
             " WHERE ST_Intersects(t.geom, poly.geom) and poly.group_id = #{groupId};")
     SingleFileGeologyType getGeologyFileByPolygonId(@Param("groupId") Long groupId);
+
+
+    @Insert("insert into polygon (id, user_id, description, create_time, polygon_name, group_id, status, geom) " +
+            "values (#{id}, #{userId}, #{description}, #{createTime}, #{polygonName}, #{groupid}, 1, ST_GeomFromText(#{geom}))")
+    void insertDrawingPolygon(PolygonEntity polygonEntity);
 }
 
 

@@ -383,4 +383,25 @@ public class GeoToolsController {
         return ApiResponse.success(singleFileGeologyType);
     }
 
+
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @PostMapping("/saveDrawingPolygon")
+    public ApiResponse<String> saveDrawingPolygon(@RequestBody DrawingPolygonDTO drawingPolygonDTO) throws IOException {
+        try {
+            if (drawingPolygonDTO.getType() == 1) {
+                Long polygonId = polygonService.saveDrawingPolygon(drawingPolygonDTO);
+
+                return ApiResponse.success(polygonId.toString());
+            }
+            else
+            {
+                Long polygonId = polygonService.saveDrawingRectangle(drawingPolygonDTO);
+
+                return ApiResponse.success(polygonId.toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
 }

@@ -2,8 +2,13 @@ package com.geology.service;
 
 import com.geology.common.jwt.AuthStorage;
 import com.geology.common.jwt.JwtUser;
+import com.geology.common.utils.BboxWktUtil;
+import com.geology.common.utils.GeoJsonToWktUtil;
 import com.geology.common.utils.GeologyDistributedIdGenerator;
 import com.geology.common.utils.Shape2PostgisUtil;
+import com.geology.domain.DTO.DrawingPolygonDTO;
+import com.geology.domain.DTO.PolygonGeojsonDTO;
+import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.PolygonBean;
 import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
@@ -25,6 +30,12 @@ public class PolygonServiceImpl implements PolygonService {
 
     @Autowired
     private GetGeologyInfoMapper getGeologyInfoMapper;
+
+    @Autowired
+    private GeoJsonToWktUtil geoJsonToWktUtil;
+
+    @Autowired
+    private BboxWktUtil bboxWktUtil;
 
 
     @Override
@@ -89,6 +100,67 @@ public class PolygonServiceImpl implements PolygonService {
         List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByGroupId(polygonId);
 
         return polygonBeans;
+    }
+
+    @Override
+    public Long saveDrawingPolygon(DrawingPolygonDTO drawingPolygonDTO) {
+        PolygonEntity polygonEntity = new PolygonEntity();
+
+        // 为每个多边形生成独立ID
+        Long polygonId = GeologyDistributedIdGenerator.getInstance().nextId();
+        // 生成主ID作为组ID
+        Long groupId = GeologyDistributedIdGenerator.getInstance().nextId();
+
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+        Date now = new Date();
+
+        polygonEntity.setId(polygonId);
+        polygonEntity.setGroupid(groupId); // 设置组ID
+        polygonEntity.setUserId(userId);
+        polygonEntity.setCreateTime(now);
+
+        // 添加序号到名称
+        polygonEntity.setPolygonName(drawingPolygonDTO.getName());
+        polygonEntity.setDescription(drawingPolygonDTO.getDescription());
+
+        // 转换多边形
+        String wktPolygon = geoJsonToWktUtil.convert(drawingPolygonDTO.getPolygonGeoJSON());
+        polygonEntity.setGeom(wktPolygon); // 设置当前多边形WKT
+
+        getGeologyInfoMapper.insertPolygon(polygonEntity);
+
+
+        return groupId;
+    }
+
+    @Override
+    public Long saveDrawingRectangle(DrawingPolygonDTO drawingPolygonDTO) {
+        PolygonEntity polygonEntity = new PolygonEntity();
+
+        // 为每个多边形生成独立ID
+        Long polygonId = GeologyDistributedIdGenerator.getInstance().nextId();
+        // 生成主ID作为组ID
+        Long groupId = GeologyDistributedIdGenerator.getInstance().nextId();
+
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+        Date now = new Date();
+
+        polygonEntity.setId(polygonId);
+        polygonEntity.setGroupid(groupId); // 设置组ID
+        polygonEntity.setUserId(userId);
+        polygonEntity.setCreateTime(now);
+
+        // 添加序号到名称
+        polygonEntity.setPolygonName(drawingPolygonDTO.getName());
+        polygonEntity.setDescription(drawingPolygonDTO.getDescription());
+
+        String wkt = bboxWktUtil.convertToWktPolygon(drawingPolygonDTO.getMinLon(), drawingPolygonDTO.getMaxLon(), drawingPolygonDTO.getMinLat(), drawingPolygonDTO.getMaxLat());
+        polygonEntity.setGeom(wkt);
+        getGeologyInfoMapper.insertPolygon(polygonEntity);
+
+        return groupId;
     }
 
 }
