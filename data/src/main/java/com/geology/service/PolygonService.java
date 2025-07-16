@@ -16,6 +16,8 @@ public interface PolygonService {
 
     List<PolygonBean> getPolygonsByUserId();
 
+    List<PolygonBean> getPolygonsByName(String polygonName);
+
     void deleteTrack(Long polygonId);
 
     List<PolygonBean> getPolygonsByGroupId(Long polygonId);

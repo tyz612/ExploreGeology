@@ -7,8 +7,6 @@ import com.geology.common.utils.GeoJsonToWktUtil;
 import com.geology.common.utils.GeologyDistributedIdGenerator;
 import com.geology.common.utils.Shape2PostgisUtil;
 import com.geology.domain.DTO.DrawingPolygonDTO;
-import com.geology.domain.DTO.PolygonGeojsonDTO;
-import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.PolygonBean;
 import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
@@ -79,6 +77,17 @@ public class PolygonServiceImpl implements PolygonService {
         long userId = Long.parseLong(user.getUserId());
 
         List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByUserId(userId);
+
+        return polygonBeans;
+    }
+
+
+    @Override
+    public List<PolygonBean> getPolygonsByName(String polygonName) {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+
+        List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByName(polygonName, userId);
 
         return polygonBeans;
     }

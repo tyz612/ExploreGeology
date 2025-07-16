@@ -254,6 +254,10 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             " t.status as status FROM polygon t  WHERE t.user_id = #{userId} and t.status = 1")
     List<PolygonBean> getPolygonsByUserId(@Param("userId") Long userId);
 
+    @Select("SELECT distinct t.group_id as groupid, t.description as description, t.polygon_name as polygonName, t.create_time as createTime,\n"+
+            " t.status as status FROM polygon t  WHERE t.polygon_name like CONCAT('%', #{polygonName}, '%') and t.user_id = #{userId} and t.status = 1")
+    List<PolygonBean> getPolygonsByName(@Param("polygonName") String polygonName, @Param("userId") Long userId);
+
 
     @Select("SELECT  ST_AsGeoJSON(t.geom) as geom FROM polygon t  WHERE t.group_id = #{groupId} and t.status = 1")
     List<PolygonBean> getPolygonsByGroupId(@Param("groupId") Long groupId);

@@ -347,6 +347,24 @@ public class GeoToolsController {
     }
 
     @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getPolygonsByName")
+    public ApiResponse<Map<String, Object>> getPolygonsByName(@RequestParam(defaultValue = "1") int currentPage,
+                                                              @RequestParam(defaultValue = "5") int pageSize,
+                                                              @RequestParam("polygonName") String polygonName) {
+        List<PolygonBean> polygonBeans = polygonService.getPolygonsByName(polygonName);
+        // 获取分页数据
+        List<PolygonBean> paginatedList = PaginationUtil.paginate(polygonBeans, currentPage, pageSize);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", paginatedList);
+        map.put("currentPage", currentPage);
+        map.put("pageSize", pageSize);
+        map.put("total", polygonBeans.size());
+
+        return ApiResponse.success(map);
+    }
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
     @GetMapping("/deletePolygon")
     public ApiResponse<String> deletePolygon(@RequestParam("polygonId") Long polygonId) {
         polygonService.deleteTrack(polygonId);
