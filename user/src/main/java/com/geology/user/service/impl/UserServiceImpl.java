@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.geology.user.common.DistributedIdGenerator;
+import com.geology.user.common.bean.UserInfoBean;
 import com.geology.user.common.config.PasswordEncoder;
+import com.geology.user.common.utils.FileStorageUtil;
 import com.geology.user.common.utils.GenerateTokenUtil;
+import com.geology.user.jwt.AuthStorage;
+import com.geology.user.jwt.JwtUser;
 import com.geology.user.jwt.TokenProvider;
 import com.geology.user.mapper.UserMapper;
 import com.geology.user.model.domain.User;
@@ -18,14 +22,19 @@ import com.geology.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Generated;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -54,6 +63,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private GenerateTokenUtil generateTokenUtil;
+
+    @Autowired
+    private FileStorageUtil fileStorageUtil;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
     /**
      * 盐值，混淆密码
      */
@@ -132,7 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return 脱敏后的用户信息
      */
     @Override
-    public String userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public UserInfoBean userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return null;
@@ -158,26 +173,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
-            return "用户名或密码错误";
+            throw new RuntimeException("用户名或密码错误！");
         }
         else {
         if (PasswordEncoder.matches(userPassword, user.getUserPassword())) {
+            UserInfoBean userInfoBean = new UserInfoBean();
+
             String token = TokenProvider.createToken(user.getId().toString(), "web", "admin");
+
+            userInfoBean.setToken(token);
+            userInfoBean.setAvatarUrl(user.getAvatarUrl());
+            userInfoBean.setEmail(user.getEmail());
+            userInfoBean.setUserName(user.getUserName());
+
 //            this.saveTokenAfterLogin(user.getUserName().toString(), TokenProvider.createToken(user.getId().toString(), "web", "admin"), 3000);
             // 模拟一个用户的数据 用户id为1  登录端为网页web  角色是admin
-            return token;
+            return userInfoBean;
         }
-        return "error";
+            throw new RuntimeException("用户名或密码错误！");
         }
     }
 
-    public String userLoginWithMail(String email, String verifyCode, HttpServletRequest request)
+    public UserInfoBean userLoginWithMail(String email, String verifyCode, HttpServletRequest request)
     {
         if (StringUtils.isAnyBlank(email)) {
-            return "邮箱不可为空";
+            throw new RuntimeException("邮箱不能为空！");
         }
         if (StringUtils.isAnyBlank(verifyCode)) {
-            return "验证码不可为空";
+            throw new RuntimeException("密码不能为空！");
         }
 
         User user = userMapper.getUserInfoByUserEmail(email);
@@ -185,16 +208,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String storedCode = redisTemplate.opsForValue().get(redisKey).toString();
 
         if (storedCode.equals(verifyCode)) {
+            UserInfoBean userInfoBean = new UserInfoBean();
+
             String token = TokenProvider.createToken(user.getId().toString(), "web", "admin");
-            return token;
+
+            userInfoBean.setToken(token);
+            userInfoBean.setAvatarUrl(user.getAvatarUrl());
+            userInfoBean.setEmail(user.getEmail());
+            userInfoBean.setUserName(user.getUserName());
+
+            return userInfoBean;
         }
         else
         {
-            return "验证码错误，请稍后重试";
+            throw new RuntimeException("验证码错误，请稍后重试！");
         }
     }
 
+    @Override
+    public String uploadImage(MultipartFile file) throws IOException {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
 
+        String originalFilename = file.getOriginalFilename();
+        String storedFilename = fileStorageUtil.storeFile(file);
+
+        userMapper.updateUserAvatar(storedFilename, userId);
+
+        return storedFilename;
+    }
+
+    @Override
+    public String updateUserName(String userName) throws IOException {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+
+        if (userName.length() > 15)
+        {
+           throw new RuntimeException("名称过长！") ;
+        }
+
+        userMapper.updateUserName(userName, userId);
+
+        return userName;
+    }
 
 
     /**

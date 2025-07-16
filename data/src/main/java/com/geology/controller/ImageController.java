@@ -130,6 +130,37 @@ public class ImageController {
         }
     }
 
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @GetMapping("/getAvatarImage")
+    public void getAvatarImage(@RequestParam("fileName") String filename, HttpServletResponse response) throws IOException {
+        // 构建图片的完整路径
+        String imagePath = "/data/userImage/" + filename;
+
+        // 检查文件是否存在
+        File file = new File(imagePath);
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "图片未找到");
+            return;
+        }
+
+        // 设置响应头
+        response.setContentType("image/jpeg"); // 根据图片类型设置正确的 MIME 类型
+        response.setContentLengthLong(file.length());
+
+        // 写入文件内容
+        try (InputStream inputStream = new FileInputStream(file);
+             OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
+
+
+
     @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
     @GetMapping("/getPoisByName")
     public ApiResponse<Map<String, Object>> getPoisByName(@RequestParam(defaultValue = "1") int currentPage,
@@ -171,6 +202,49 @@ public class ImageController {
 
         // 缩略图路径（在原目录下创建 thumbnails 子目录）
         String thumbnailDir = "/data/thumbnails/";
+        String thumbnailPath = thumbnailDir + filename;
+
+        // 检查缩略图是否存在
+        File thumbnailFile = new File(thumbnailPath);
+
+        // 如果缩略图不存在，则生成
+        if (!thumbnailFile.exists()) {
+            // 确保缩略图目录存在
+            new File(thumbnailDir).mkdirs();
+
+            try {
+                // 生成缩略图（保持比例，质量压缩）
+                Thumbnails.of(originalFile)
+                        .size(width, height)
+                        .outputQuality(0.8)
+                        .allowOverwrite(true)
+                        .toFile(thumbnailPath);
+            } catch (IOException e) {
+                // 生成失败则返回原图
+                sendOriginalImage(response, originalFile);
+                return;
+            }
+        }
+
+        // 发送缩略图
+        sendThumbnailImage(response, thumbnailFile);
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getAvatarThumbnailImage")
+    public void getAvatarThumbnailImage(
+            @RequestParam("fileName") String filename,
+            @RequestParam(value = "width", defaultValue = "200") int width,
+            @RequestParam(value = "height", defaultValue = "200") int height,
+            HttpServletResponse response
+    ) throws IOException {
+        // 原图路径
+        String originalPath = "/data/userImage/" + filename;
+        File originalFile = new File(originalPath);
+
+        // 缩略图路径（在原目录下创建 thumbnails 子目录）
+        String thumbnailDir = "/data/userImage/thumbnails/";
         String thumbnailPath = thumbnailDir + filename;
 
         // 检查缩略图是否存在

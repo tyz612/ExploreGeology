@@ -1,6 +1,7 @@
 package com.geology.user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.geology.user.common.bean.UserInfoBean;
 import com.geology.user.common.utils.ApiResponse;
 import com.geology.user.common.BaseResponse;
 import com.geology.user.common.ErrorCode;
@@ -11,6 +12,7 @@ import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
 import com.geology.user.jwt.JwtUser;
 import com.geology.user.jwt.TokenProvider;
+import com.geology.user.mapper.UserMapper;
 import com.geology.user.model.domain.User;
 import com.geology.user.model.domain.request.UserLoginMailRequest;
 import com.geology.user.model.domain.request.UserLoginRequest;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.geology.user.jwt.AuthStorage;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
 
@@ -42,6 +46,7 @@ import static com.geology.user.contant.UserConstant.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
+//@CrossOrigin(origins = "http://localhost:8081")
 public class UserController {
 
     @Resource
@@ -58,6 +63,9 @@ public class UserController {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 用户注册
@@ -98,7 +106,7 @@ public class UserController {
      */
     @CrossOrigin(origins = "*")
     @PostMapping("/login")
-    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<UserInfoBean> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -107,16 +115,16 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        String token = userService.userLogin(userAccount, userPassword, request);
+        UserInfoBean userInfoBean = userService.userLogin(userAccount, userPassword, request);
 
 
-        return ResultUtils.success(token);
+        return ResultUtils.success(userInfoBean);
     }
 
 
     @CrossOrigin(origins = "*")
     @PostMapping("/loginWithMail")
-    public BaseResponse<String> loginWithMail(@RequestBody UserLoginMailRequest userLoginMailRequest, HttpServletRequest request) {
+    public BaseResponse<UserInfoBean> loginWithMail(@RequestBody UserLoginMailRequest userLoginMailRequest, HttpServletRequest request) {
         if (userLoginMailRequest == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -125,10 +133,10 @@ public class UserController {
         if (StringUtils.isAnyBlank(email, verifyCode)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        String token = userService.userLoginWithMail(email, verifyCode, request);
+        UserInfoBean userInfoBean = userService.userLoginWithMail(email, verifyCode, request);
 
 
-        return ResultUtils.success(token);
+        return ResultUtils.success(userInfoBean);
     }
 
     /**
@@ -169,14 +177,16 @@ public class UserController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/CurrentUser")
-    public ApiResponse<Long> getInfo() {
+    @GetMapping("/info")
+    public BaseResponse<UserInfoBean> getInfo() {
         // 从全局环境中获取用户id
         JwtUser user = AuthStorage.getUser();
         long userId = Long.parseLong(user.getUserId());
         // TODO 校验用户是否合法
 
-        return ApiResponse.success(userId);
+        UserInfoBean userInfoBean = userMapper.getUserInfoByUserId(userId);
+
+        return ResultUtils.success(userInfoBean);
     }
 
 
@@ -244,12 +254,45 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "*")
+    @PostMapping("/uploadAvatar")
+    public ApiResponse<String> uploadAvatar(@RequestParam("image") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ApiResponse.fail(400,"请选择要上传的图片");
+            }
+
+            String uploadedImage = userService.uploadImage(file);
+            return ApiResponse.success(uploadedImage);
+
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.fail(400, e.getMessage());
+        } catch (IOException e) {
+            return ApiResponse.fail(400,"图片上传失败: " + e.getMessage());
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/updateName")
+    public ApiResponse<String> updateName(@RequestParam("newName") String newName) {
+        try {
+            String userNewName = userService.updateUserName(newName);
+            return ApiResponse.success(userNewName);
+
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.fail(400, e.getMessage());
+        } catch (IOException e) {
+            return ApiResponse.fail(400,"昵称修改失败: " + e.getMessage());
+        }
+    }
+
 
     @CrossOrigin(origins = "*")
     @GetMapping("/test")
     public String hello() {
         return "hello";
     }
+
 
     @CrossOrigin(origins = "*")
     @GetMapping("/sendSmsCode")
