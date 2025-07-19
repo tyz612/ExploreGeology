@@ -232,6 +232,32 @@ public class GeoToolsController {
         return ApiResponse.success(singleFileGeologyType);
     }
 
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileByPolygonxi")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygonxi(@RequestBody PolygonGeojsonDTO polygonGeojsonDTO) {
+        if (polygonGeojsonDTO == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonByXi(polygonGeojsonDTO);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getAllxis")
+    public ApiResponse<List<GeologyXiBean>> getAllxis(@RequestBody PolygonGeojsonDTO polygonGeojsonDTO) {
+        if (polygonGeojsonDTO == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        List<GeologyXiBean> geologyXiBeans = geologyTools.getGeologyFileByPolygonallXis(polygonGeojsonDTO);
+
+        return ApiResponse.success(geologyXiBeans);
+    }
+
+
     @CrossOrigin(origins = "*")
     @GetMapping("/getGeologyFileByCountyCode")
     public ApiResponse<SingleFileGeologyType> getGeologyFileByCountyCode(@RequestParam("countyCode") String countyCode) {

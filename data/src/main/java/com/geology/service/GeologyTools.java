@@ -3,10 +3,7 @@ package com.geology.service;
 import com.geology.domain.DTO.PolygonGeojsonDTO;
 import com.geology.domain.DTO.PolygonInfoDTO;
 import com.geology.domain.DTO.RectangleDTO;
-import com.geology.domain.bean.EnvolopeBean;
-import com.geology.domain.bean.GeologyBufferStatisticBean;
-import com.geology.domain.bean.GeologyTypeGeometryBean;
-import com.geology.domain.bean.SingleFileGeologyType;
+import com.geology.domain.bean.*;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 
 import java.util.List;
@@ -25,6 +22,10 @@ public interface GeologyTools {
     SingleFileGeologyType getGeologyFileByPolygonId(Long polygonId);
 
     SingleFileGeologyType getGeologyFileByPolygonByName(PolygonGeojsonDTO polygonGeoJSON);
+
+    SingleFileGeologyType getGeologyFileByPolygonByXi(PolygonGeojsonDTO polygonGeoJSON);
+
+    List<GeologyXiBean> getGeologyFileByPolygonallXis(PolygonGeojsonDTO polygonGeoJSON);
 
     SingleFileGeologyType getGeologyFileByCountyCode(String countyCode);
 

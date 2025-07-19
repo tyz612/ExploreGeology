@@ -2,9 +2,9 @@ package com.geology.service;
 
 import com.geology.common.utils.DownloadFileUtil;
 import com.geology.domain.DTO.PolygonGeojsonDTO;
-import com.geology.domain.DTO.PolygonInfoDTO;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
+import com.geology.domain.bean.GeologyXiBean;
 import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
@@ -79,6 +79,22 @@ public class GeologyToolsImpl implements GeologyTools {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonByName(polygonGeoJSON.getPolygonGeoJSON(), polygonGeoJSON.getKeywords(), polygonGeoJSON.getTong());
 
         return singleFileGeologyType;
+    }
+
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygonByXi(PolygonGeojsonDTO polygonGeoJSON) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonByXi(polygonGeoJSON.getPolygonGeoJSON(), polygonGeoJSON.getXi());
+
+        return singleFileGeologyType;
+    }
+
+
+    @Override
+    public List<GeologyXiBean> getGeologyFileByPolygonallXis(PolygonGeojsonDTO polygonGeoJSON) {
+        List<GeologyXiBean> geologyXiBeans = getGeologyInfoMapper.getGeologyFileByPolygonallXis(polygonGeoJSON.getPolygonGeoJSON());
+
+        return geologyXiBeans;
     }
 
     @Override

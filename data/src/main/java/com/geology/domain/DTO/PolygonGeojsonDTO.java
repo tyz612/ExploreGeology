@@ -9,4 +9,8 @@ public class PolygonGeojsonDTO {
     private String keywords;
 
     private String tong;
+
+    private String xi;
+
+    private String jie;
 }

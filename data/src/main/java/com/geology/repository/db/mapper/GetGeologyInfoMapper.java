@@ -165,6 +165,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "        'properties', json_build_object(\n" +
             "            'lower_age', t.lower_age,\n" +
             "            'upper_age', t.upper_age,\n" +
+            "            'xi', t.xi,\n" +
+            "            'jie', t.jie,\n" +
             "            'qduecd', t.qduecd,\n" +
             "            'qduecc', t.qduecc,\n" +
             "            'seq', t.seq,\n" +
@@ -186,6 +188,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "        'properties', json_build_object(\n" +
             "            'lower_age', t.lower_age,\n" +
             "            'upper_age', t.upper_age,\n" +
+            "            'xi', t.xi,\n" +
+            "            'jie', t.jie,\n" +
             "            'qduecd', t.qduecd,\n" +
             "            'qduecc', t.qduecc,\n" +
             "            'seq', t.seq,\n" +
@@ -199,6 +203,35 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     SingleFileGeologyType getGeologyFileByPolygonByName(@Param("polygonGeoJSON") String polygonGeoJSON,
                                                         @Param("keywords") String keywords,
                                                         @Param("tong") String tong);
+
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'xi', t.xi,\n" +
+            "            'jie', t.jie,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t,\n" +
+            "(SELECT ST_Transform(ST_GeomFromGeoJSON(#{polygonGeoJSON}), 4326) AS geom) AS poly\n" +
+            "WHERE ST_Intersects(t.geom, poly.geom) and t.xi = #{xi};")
+    SingleFileGeologyType getGeologyFileByPolygonByXi(@Param("polygonGeoJSON") String polygonGeoJSON,
+                                                      @Param("xi") String xi);
+
+    @Select("SELECT distinct t.xi as xi, xi_seq as seq, t.xi_name as xiName " +
+            "FROM merge t,\n" +
+            "(SELECT ST_Transform(ST_GeomFromGeoJSON(#{polygonGeoJSON}), 4326) AS geom) AS poly\n" +
+            "WHERE ST_Intersects(t.geom, poly.geom) AND t.xi IS NOT NULL;")
+    List<GeologyXiBean> getGeologyFileByPolygonallXis(@Param("polygonGeoJSON") String polygonGeoJSON);
 
 
     @Select("SELECT\n" +
