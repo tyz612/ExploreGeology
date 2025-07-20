@@ -46,6 +46,10 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
             "                                    'properties', json_build_object(\n" +
             "                                            'lower_age', g.lower_age,\n" +
             "                                            'upper_age', g.upper_age,\n" +
+            "                                            'xi', g.xi,\n" +
+            "                                            'jie', g.jie,\n" +
+            "                                            'xiName', g.xi_name,\n" +
+            "                                            'xiSeq', g.xi_seq,\n" +
             "                                            'qduecd', g.qduecd,\n" +
             "                                            'qduecc', g.qduecc,\n" +
             "                                            'tong', g.tong,\n" +
@@ -100,6 +104,9 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
                                                           @Param("buffer") Integer buffer,
                                                           @Param("keywords") String keywords,
                                                           @Param("tong") String tong);
+
+    @Select("SELECT ST_AsGeoJSON(ST_Buffer(t.geom::geography, #{buffer})::geometry) FROM tracks t WHERE t.id = #{trackId}")
+    String getBufferGeojson(@Param("trackId") Long trackId, @Param("buffer") Integer buffer);
 
 
 

@@ -416,6 +416,18 @@ public class GeoToolsController {
         return ApiResponse.success(singleFileGeologyType);
     }
 
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileBySavePolygonxi")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileBySavePolygonxi(@RequestBody PolygonXiBean polygonXiBean) {
+        if (polygonXiBean == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonIdandXi(polygonXiBean);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getGeologyFileByPolygonIdName")

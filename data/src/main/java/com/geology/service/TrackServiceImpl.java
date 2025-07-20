@@ -99,4 +99,12 @@ public class TrackServiceImpl implements TrackService {
 
         return singleFileGeologyType;
     }
+
+    @Override
+    public String getBufferGeojson(Long trackId, Integer buffer) {
+        String bufferGeojson = trackMapper.getBufferGeojson(trackId, buffer);
+
+
+        return bufferGeojson;
+    }
 }

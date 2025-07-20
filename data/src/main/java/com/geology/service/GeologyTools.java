@@ -29,6 +29,8 @@ public interface GeologyTools {
 
     SingleFileGeologyType getGeologyFileByCountyCode(String countyCode);
 
+    SingleFileGeologyType getGeologyFileByPolygonIdandXi(PolygonXiBean polygonXiBean);
+
     SingleFileGeologyType getGeologyFileByPolygonName(Long polygonId, String keyword, String tong);
 
 

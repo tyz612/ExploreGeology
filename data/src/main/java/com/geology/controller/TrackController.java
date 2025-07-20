@@ -114,5 +114,14 @@ public class TrackController {
         return ApiResponse.success(singleFileGeologyType);
     }
 
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getBufferGeojson")
+    public ApiResponse<String> getBufferGeojson(@RequestParam("trackId") Long trackId, @RequestParam("buffer") int buffer) {
+        String bufferGeojson = trajectoryService.getBufferGeojson(trackId, buffer);
+
+        return ApiResponse.success(bufferGeojson);
+    }
+
 }
 

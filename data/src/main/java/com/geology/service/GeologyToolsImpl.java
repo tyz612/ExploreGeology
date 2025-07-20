@@ -5,6 +5,7 @@ import com.geology.domain.DTO.PolygonGeojsonDTO;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.GeologyBufferStatisticBean;
 import com.geology.domain.bean.GeologyXiBean;
+import com.geology.domain.bean.PolygonXiBean;
 import com.geology.domain.bean.SingleFileGeologyType;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
@@ -109,6 +110,13 @@ public class GeologyToolsImpl implements GeologyTools {
     @Override
     public SingleFileGeologyType getGeologyFileByPolygonId(Long polygonId) {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonId(polygonId);
+
+        return singleFileGeologyType;
+    }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileByPolygonIdandXi(PolygonXiBean polygonXiBean) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonIdandXi(polygonXiBean.getPolygonId(), polygonXiBean.getXi());
 
         return singleFileGeologyType;
     }
