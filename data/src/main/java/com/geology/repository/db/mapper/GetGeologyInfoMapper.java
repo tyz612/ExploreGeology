@@ -139,6 +139,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "            'properties', json_build_object(\n" +
             "                    'lower_age', t.lower_age,\n" +
             "                    'upper_age', t.upper_age,\n" +
+            "                    'xi', t.xi,\n" +
+            "                    'jie', t.jie,\n" +
             "                    'qduecd', t.qduecd,\n" +
             "                    'qduecc', t.qduecc,\n" +
             "                    'seq', t.seq,\n" +

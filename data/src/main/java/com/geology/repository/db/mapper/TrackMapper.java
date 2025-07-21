@@ -108,8 +108,4 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
     @Select("SELECT ST_AsGeoJSON(ST_Buffer(t.geom::geography, #{buffer})::geometry) FROM tracks t WHERE t.id = #{trackId}")
     String getBufferGeojson(@Param("trackId") Long trackId, @Param("buffer") Integer buffer);
 
-
-
-
-
 }
