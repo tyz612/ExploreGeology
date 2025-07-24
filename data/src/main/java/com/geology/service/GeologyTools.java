@@ -31,6 +31,10 @@ public interface GeologyTools {
 
     SingleFileGeologyType getGeologyFileByPolygonIdandXi(PolygonXiBean polygonXiBean);
 
+    SingleFileGeologyType getGeologyFileByPolygonIdandAge(PolygonGeojsonDTO polygonGeojsonDTO);
+
+    SingleFileGeologyType getGeologyFileBySavePolygonIdandXi(PolygonXiBean polygonXiBean);
+
     SingleFileGeologyType getGeologyFileByPolygonName(Long polygonId, String keyword, String tong);
 
 

@@ -430,6 +430,31 @@ public class GeoToolsController {
 
 
     @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileBySavePolygonAge")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileBySavePolygonAndAge(@RequestBody PolygonXiBean polygonXiBean) {
+        if (polygonXiBean == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileBySavePolygonIdandXi(polygonXiBean);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/getGeologyFileByDrawPolygonAge")
+    public ApiResponse<SingleFileGeologyType> getGeologyFileBySavePolygonAge(@RequestBody PolygonGeojsonDTO polygonGeojsonDTO) {
+        if (polygonGeojsonDTO == null) {
+            throw new RuntimeException("Params empty.");
+        }
+
+        SingleFileGeologyType singleFileGeologyType = geologyTools.getGeologyFileByPolygonIdandAge(polygonGeojsonDTO);
+
+        return ApiResponse.success(singleFileGeologyType);
+    }
+
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/getGeologyFileByPolygonIdName")
     public ApiResponse<SingleFileGeologyType> getGeologyFileByPolygonIdName(@RequestParam("groupId") Long groupId,
                                                                             @RequestParam("keyword") String keyword,

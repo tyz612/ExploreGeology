@@ -13,4 +13,6 @@ public class PolygonGeojsonDTO {
     private String xi;
 
     private String jie;
+
+    private double age;
 }

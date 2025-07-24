@@ -123,6 +123,21 @@ public class GeologyToolsImpl implements GeologyTools {
 
 
     @Override
+    public SingleFileGeologyType getGeologyFileByPolygonIdandAge(PolygonGeojsonDTO polygonGeojsonDTO) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonIdandAge(polygonGeojsonDTO.getPolygonGeoJSON(), polygonGeojsonDTO.getAge());
+
+        return singleFileGeologyType;
+    }
+
+    @Override
+    public SingleFileGeologyType getGeologyFileBySavePolygonIdandXi(PolygonXiBean polygonXiBean) {
+        SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileBySavePolygonIdandAge(polygonXiBean.getPolygonId(), polygonXiBean.getAge());
+
+        return singleFileGeologyType;
+    }
+
+
+    @Override
     public SingleFileGeologyType getGeologyFileByPolygonName(Long polygonId, String keyword, String tong) {
         SingleFileGeologyType singleFileGeologyType = getGeologyInfoMapper.getGeologyFileByPolygonName(polygonId, keyword, tong);
 

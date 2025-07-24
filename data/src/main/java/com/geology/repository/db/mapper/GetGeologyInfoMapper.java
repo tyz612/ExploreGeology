@@ -371,6 +371,53 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     SingleFileGeologyType  getGeologyFileByPolygonIdandXi(@Param("groupId") Long groupId,
                                                           @Param("xi") String xi);
 
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'xi', t.xi,\n" +
+            "            'jie', t.jie,\n" +
+            "            'xiName', t.xi_name,\n" +
+            "            'xiSeq', t.xi_seq,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t, polygon poly\n" +
+            " WHERE ST_Intersects(t.geom, poly.geom) and poly.group_id = #{groupId} and t.lower_age >= #{age} and t.upper_age <= #{age};")
+    SingleFileGeologyType  getGeologyFileBySavePolygonIdandAge(@Param("groupId") Long groupId,
+                                                               @Param("age") Double age);
+
+        @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'lower_age', t.lower_age,\n" +
+            "            'upper_age', t.upper_age,\n" +
+            "            'xi', t.xi,\n" +
+            "            'jie', t.jie,\n" +
+            "            'qduecd', t.qduecd,\n" +
+            "            'qduecc', t.qduecc,\n" +
+            "            'seq', t.seq,\n" +
+            "            'tong', t.tong\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM merge t,\n" +
+            "(SELECT ST_Transform(ST_GeomFromGeoJSON(#{polygonGeoJSON}), 4326) AS geom) AS poly\n" +
+            "WHERE ST_Intersects(t.geom, poly.geom) and t.lower_age >= #{time} and t.upper_age <= #{time};")
+    SingleFileGeologyType getGeologyFileByPolygonIdandAge(@Param("polygonGeoJSON") String polygonGeoJSON,
+                                                          @Param("time") Double time);
+
 
     @Insert("insert into polygon (id, user_id, description, create_time, polygon_name, group_id, status, geom) " +
             "values (#{id}, #{userId}, #{description}, #{createTime}, #{polygonName}, #{groupid}, 1, ST_GeomFromText(#{geom}))")

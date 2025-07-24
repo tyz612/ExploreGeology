@@ -7,4 +7,6 @@ public class PolygonXiBean {
     private String xi;
 
     private Long polygonId;
+
+    private double age;
 }
