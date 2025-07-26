@@ -8,6 +8,7 @@ import com.geology.user.common.ErrorCode;
 import com.geology.user.common.ResultUtils;
 import com.geology.user.common.utils.GenerateCaptchaUtil;
 import com.geology.user.common.utils.MailClientUtil;
+import com.geology.user.common.utils.RockNamePicker;
 import com.geology.user.contant.UserConstant;
 import com.geology.user.exception.BusinessException;
 import com.geology.user.jwt.JwtUser;
@@ -67,6 +68,9 @@ public class UserController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RockNamePicker rockNamePicker;
+
     /**
      * 用户注册
      *
@@ -85,15 +89,20 @@ public class UserController {
         String checkPassword = userRegisterRequest.getCheckPassword();
         String planetCode = "002";
         String phoneNumber = userRegisterRequest.getPhoneNumber();
-        String userName = userRegisterRequest.getUserName();
+
+//        String userName = userRegisterRequest.getUserName();
+        String userName = rockNamePicker.pickRandomRock();
+
         LocalDateTime now = LocalDateTime.now(); // 获取当前日期和时间
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String createTime = now.format(formatter);
         String email = userRegisterRequest.getEmail();
+        String emailVericode = userRegisterRequest.getEmailVericode();
+
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode, userName)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName, createTime, email);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, planetCode, phoneNumber, userName, createTime, email,emailVericode);
         return ResultUtils.success(result);
     }
 

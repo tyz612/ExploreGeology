@@ -85,7 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword, String planetCode,
-                             String phoneNumber, String userName, String createTime, String email) {
+                             String phoneNumber, String userName, String createTime, String email, String emailVericode) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -114,28 +114,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (count > 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
         }
-        // 2. 加密
-        String encryptPassword = DigestUtils.md5DigestAsHex((userPassword).getBytes());
-//        String encryptPassword =
 
+        String redisKey = "CAPTCHA:REGISTER:" + email;
+        String storedCode = redisTemplate.opsForValue().get(redisKey).toString();
 
-        // 3. 插入数据
-        User user = new User();
-        user.setUserAccount(userAccount);
-        user.setUserPassword(encryptPassword);
-        user.setPlanetCode(planetCode);
-        user.setPhone(phoneNumber);
-        user.setUserName(userName);
-        user.setCreateTime(createTime);
-        user.setEmail(email);
+        if (storedCode.equals(emailVericode)) {
+            // 2. 加密
+            String encryptPassword = DigestUtils.md5DigestAsHex((userPassword).getBytes());
 
-        Long taskId = DistributedIdGenerator.getInstance().nextId();
-        user.setId(taskId);
-        boolean saveResult = this.save(user);
-        if (!saveResult) {
-            return -1;
+            // 3. 插入数据
+            User user = new User();
+            user.setUserAccount(userAccount);
+            user.setUserPassword(encryptPassword);
+            user.setPlanetCode(planetCode);
+            user.setPhone(phoneNumber);
+            user.setUserName(userName);
+            user.setCreateTime(createTime);
+            user.setEmail(email);
+
+            Long taskId = DistributedIdGenerator.getInstance().nextId();
+            user.setId(taskId);
+            boolean saveResult = this.save(user);
+            if (!saveResult) {
+                return -1;
+            }
+            return user.getId();
         }
-        return user.getId();
+        else
+        {
+            throw new RuntimeException("验证码错误，请稍后重试！");
+        }
+
     }
 
     /**

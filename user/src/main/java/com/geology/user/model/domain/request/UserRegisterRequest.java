@@ -49,4 +49,9 @@ public class UserRegisterRequest implements Serializable {
      */
     private String email;
 
+    /**
+     * 用户邮箱
+     */
+    private String emailVericode;
+
 }
