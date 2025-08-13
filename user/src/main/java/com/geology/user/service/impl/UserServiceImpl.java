@@ -190,6 +190,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
             String token = TokenProvider.createToken(user.getId().toString(), "web", "admin");
 
+            userInfoBean.setId(user.getId());
             userInfoBean.setToken(token);
             userInfoBean.setAvatarUrl(user.getAvatarUrl());
             userInfoBean.setEmail(user.getEmail());

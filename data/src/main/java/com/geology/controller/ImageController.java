@@ -241,10 +241,14 @@ public class ImageController {
     ) throws IOException {
         // 原图路径
         String originalPath = "/data/userImage/" + filename;
+        //本地环境
+//        String originalPath = "D:/userImage/" + filename;
         File originalFile = new File(originalPath);
 
         // 缩略图路径（在原目录下创建 thumbnails 子目录）
         String thumbnailDir = "/data/userImage/thumbnails/";
+        //本地环境
+//        String thumbnailDir = "D:/userImage/thumbnails/" + filename;
         String thumbnailPath = thumbnailDir + filename;
 
         // 检查缩略图是否存在
