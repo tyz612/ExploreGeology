@@ -34,7 +34,7 @@ public interface UserMapper extends BaseMapper<User> {
     @Update("UPDATE user_info SET user_name = #{newName} WHERE id = #{userId};")
     void updateUserName(@Param("newName") String newName, @Param("userId") Long userId);
 
-    @Select("select u.user_name as userName, u.avatar_url as avatarUrl, u.email as email from user_info u where id = #{userId}")
+    @Select("select u.id as id, u.user_name as userName, u.avatar_url as avatarUrl, u.email as email from user_info u where id = #{userId}")
     UserInfoBean getUserInfoByUserId(@Param("userId") Long userId);
 }
 
