@@ -25,4 +25,6 @@ public interface PolygonService {
     Long saveDrawingPolygon(DrawingPolygonDTO drawingPolygonDTO);
 
     Long saveDrawingRectangle(DrawingPolygonDTO drawingPolygonDTO);
+
+    String saveSharedPolygon(String fromUserId, String dataId, String receiveUserId);
 }

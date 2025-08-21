@@ -30,6 +30,8 @@ public interface HistoryMessagesService extends IService<HistoryMessages> {
 
     String saveMessage(String receiver, String message);
 
+    String saveShareMessage(String receiver, String dataId, String dataType);
+
     List<HistoryMessages> getHistoryMessagesById(String receiver);
 }
 

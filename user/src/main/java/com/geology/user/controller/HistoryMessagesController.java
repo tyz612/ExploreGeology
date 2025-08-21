@@ -76,6 +76,19 @@ public class HistoryMessagesController {
         String savedMessage = historyMessagesService.saveMessage(messageDTO.getReceiver(), messageDTO.getMessage());
 
         return R.success(savedMessage);
+    };
+
+
+    /**
+     * 保存聊天信息到数据库
+     *
+     * @return 单条消息
+     */
+    @PostMapping("/saveShareMessage")
+    public R<String> saveShareMessage(@RequestBody MessageDTO messageDTO) {
+        String savedMessage = historyMessagesService.saveMessage(messageDTO.getReceiver(), messageDTO.getMessage());
+
+        return R.success(savedMessage);
     }
 
 

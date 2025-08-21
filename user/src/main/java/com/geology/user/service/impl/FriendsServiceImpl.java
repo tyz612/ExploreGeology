@@ -7,14 +7,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 //import com.mh.dao.FriendsDao;
 import com.geology.user.common.ErrorCode;
 import com.geology.user.dao.FriendsDao;
+import com.geology.user.dao.ShareDao;
 import com.geology.user.dao.UserInfoDao;
 import com.geology.user.dto.R;
 import com.geology.user.dto.vo.ApplyUpdateAgrsVo;
 import com.geology.user.dto.vo.FriendsInfoDto;
+import com.geology.user.dto.vo.ShareDataInfoDTO;
+import com.geology.user.dto.vo.ShareDataUpdateVO;
 import com.geology.user.exception.BusinessException;
 import com.geology.user.jwt.AuthStorage;
 import com.geology.user.jwt.JwtUser;
 import com.geology.user.pojo.Friends;
+import com.geology.user.pojo.Share;
 import com.geology.user.pojo.UserInfo;
 import com.geology.user.service.FriendsService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,9 @@ public class FriendsServiceImpl extends ServiceImpl<FriendsDao, Friends> impleme
 
     @Autowired
     private final UserInfoDao userInfoDao;
+
+    @Autowired
+    private final ShareDao shareDao;
 
     /**
      * 分页查询
@@ -223,6 +230,73 @@ public class FriendsServiceImpl extends ServiceImpl<FriendsDao, Friends> impleme
         LambdaQueryWrapper<UserInfo> in = new LambdaQueryWrapper<UserInfo>().in(UserInfo::getId, ids);
         List<UserInfo> userInfos = userInfoDao.selectList(in);
         return userInfos.size()>0?R.success(userInfos):R.error("该用户没有好友");
+    }
+
+    @Override
+    public R<List<ShareDataInfoDTO>> getSharedDataInfo() {
+        JwtUser user = AuthStorage.getUser();
+        String userId = user.getUserId();
+
+
+        // 构造条件进行查询
+        LambdaQueryWrapper<Share> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Share::getContactId, userId).eq(Share::getStatus, 2);
+        List<Share> shareDataInfos = shareDao.selectList(queryWrapper);
+
+        // 鉴空
+        if(shareDataInfos.size() == 0){
+            return R.error("暂无好友分享数据!");
+        }
+
+        // 构造返回的DTO列表
+        ArrayList<ShareDataInfoDTO> returnShareDataInfos = new ArrayList<>();
+        for (Share share : shareDataInfos) {
+            returnShareDataInfos.add(new ShareDataInfoDTO(share.getUserId().toString(), share.getUserName(), share.getAvatar(), share.getDataType(), share.getDataName(), share.getContactId().toString(), share.getDataId()));
+        }
+
+        return R.success(returnShareDataInfos);
+    }
+
+    @Override
+    public R<String> shareData(String friendId, String dataId, Integer dataType, String dataName) {
+        JwtUser user = AuthStorage.getUser();
+        String userId = user.getUserId();
+        // 检查id是否存在
+        LambdaQueryWrapper<UserInfo> currentUserInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        currentUserInfoLambdaQueryWrapper.eq(UserInfo::getId, Long.parseLong(userId));
+        UserInfo userInfo = userInfoDao.selectOne(currentUserInfoLambdaQueryWrapper);
+
+        String userName = userInfo.getUserName();
+        String avatar = userInfo.getAvatarUrl();
+
+
+        // 检查id是否存在
+        LambdaQueryWrapper<UserInfo> userInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userInfoLambdaQueryWrapper.eq(UserInfo::getId, Long.parseLong(friendId));
+
+        List<UserInfo> userInfos = userInfoDao.selectList(userInfoLambdaQueryWrapper);
+
+        if (userInfos.size() == 0)
+        {
+            return R.error("该用户不存在");
+        }
+
+        // 构造对象1：主动添加信息
+        Share share = new Share(null, userId, friendId, dataId, dataType, 0, dataName, userName, 2, avatar);
+        shareDao.insert(share);
+        log.info(userId.concat(" 分享数据 ").concat(dataId).concat(" 到 ").concat(friendId));
+        return R.success("数据分享成功");
+    }
+
+    @Override
+    public R<String> updateShareDataStatus(ShareDataUpdateVO shareDataUpdateVO) {
+        JwtUser user = AuthStorage.getUser();
+        String userId = user.getUserId();
+
+        // 根据操作类型（1或3），同时修改两条记录
+        shareDao.updateStatus(shareDataUpdateVO.getStatus(), shareDataUpdateVO.getDataId());
+
+        return R.success("修改成功");
     }
 
 

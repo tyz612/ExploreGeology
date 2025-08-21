@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.geology.user.dto.R;
 import com.geology.user.dto.vo.ApplyUpdateAgrsVo;
 import com.geology.user.dto.vo.FriendsInfoDto;
+import com.geology.user.dto.vo.ShareDataInfoDTO;
+import com.geology.user.dto.vo.ShareDataUpdateVO;
 import com.geology.user.pojo.Friends;
 import com.geology.user.pojo.UserInfo;
 import com.geology.user.service.FriendsService;
@@ -77,6 +79,21 @@ public class FriendsController {
         return friendsService.addFriend(beAddId);
     }
 
+
+    /**
+     * 分享数据
+     * @return 执行状态
+     */
+    @GetMapping("/shareData")
+    public R<String> shareData(@RequestParam("friendId") String friendId,
+                               @RequestParam("dataId") String dataId,
+                               @RequestParam("dataType") Integer dataType,
+                               @RequestParam("dataName") String dataName){
+        return friendsService.shareData(friendId,dataId,dataType,dataName);
+    }
+
+
+
     /**
      * 获取申请的好友列表 - 在好友列表根据当前用户ID进行过滤，及状态为2的数据列表
      * @return 申请的好友列表DTO对象
@@ -84,6 +101,16 @@ public class FriendsController {
     @GetMapping("/getApplyFriendsInfo")
     public R<List<FriendsInfoDto>> getApplyFriendsInfo(){
         return friendsService.getApplyFriendsInfo();
+    }
+
+
+    /**
+     * 获取申请的好友列表 - 在好友列表根据当前用户ID进行过滤，及状态为2的数据列表
+     * @return 申请的好友列表DTO对象
+     */
+    @GetMapping("/getSharedDataInfo")
+    public R<List<ShareDataInfoDTO>> getSharedDataInfo(){
+        return friendsService.getSharedDataInfo();
     }
 
     @GetMapping("/searchUser")
@@ -110,6 +137,16 @@ public class FriendsController {
     @PostMapping("/updateFriendStatus")
     public R<String> updateFriendStatus(@RequestBody ApplyUpdateAgrsVo applyArgs) {
         return friendsService.updateFriendStatus(applyArgs);
+    }
+
+    /**
+     * 处理器-申请处理结果-同意或拒绝
+     * @param shareDataUpdateVO 处理好友申请参数
+     * @return ·
+     */
+    @PostMapping("/updateShareDataStatus")
+    public R<String> updateShareDataStatus(@RequestBody ShareDataUpdateVO shareDataUpdateVO) {
+        return friendsService.updateShareDataStatus(shareDataUpdateVO);
     }
 
     /**
