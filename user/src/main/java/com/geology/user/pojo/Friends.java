@@ -17,10 +17,13 @@ import lombok.NoArgsConstructor;
 public class Friends {
     //自增主键
     private Integer id;
+
     //用户ID
     private String userId;
+
     //好友ID
     private String contactId;
+
     //好友状态
     private Integer state;
 }

@@ -106,7 +106,7 @@ public class PolygonServiceImpl implements PolygonService {
         JwtUser user = AuthStorage.getUser();
         long userId = Long.parseLong(user.getUserId());
 
-        List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByGroupId(polygonId);
+        List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByGroupId(userId, polygonId);
 
         return polygonBeans;
     }
@@ -170,6 +170,41 @@ public class PolygonServiceImpl implements PolygonService {
         getGeologyInfoMapper.insertPolygon(polygonEntity);
 
         return groupId;
+    }
+
+    @Override
+    public String saveSharedPolygon(String fromUserId, String dataId, String receiveUserId) {
+        Long userId = Long.parseLong(receiveUserId);
+        Long polygonGroupId = Long.parseLong(dataId);
+        List<PolygonBean> polygonBeans = getGeologyInfoMapper.getPolygonsByUserIdAndGroupId(userId, polygonGroupId);
+
+        Long polygonGroupNewId = GeologyDistributedIdGenerator.getInstance().nextId();
+        Date now = new Date();
+        for (int i = 0; i < polygonBeans.size(); i++)
+        {
+            PolygonBean polygonBean = polygonBeans.get(i);
+            PolygonEntity polygonEntity = new PolygonEntity();
+
+            // 为每个多边形生成独立ID
+            Long polygonId = GeologyDistributedIdGenerator.getInstance().nextId();
+            // 生成主ID作为组ID
+            Long groupId = polygonBean.getGroupid();
+
+            polygonEntity.setId(polygonId);
+            polygonEntity.setGroupid(polygonGroupNewId); // 设置组ID
+            polygonEntity.setUserId(Long.parseLong(fromUserId));
+            polygonEntity.setCreateTime(now);
+
+            // 添加序号到名称
+            polygonEntity.setPolygonName(polygonBean.getPolygonName());
+            polygonEntity.setDescription(polygonBean.getDescription());
+            polygonEntity.setGeom(polygonBean.getGeom());
+            polygonEntity.setStatus(1);
+
+            getGeologyInfoMapper.insertSharePolygon(polygonEntity);
+        }
+
+        return dataId;
     }
 
 }

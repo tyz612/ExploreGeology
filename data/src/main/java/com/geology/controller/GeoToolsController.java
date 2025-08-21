@@ -485,4 +485,20 @@ public class GeoToolsController {
         }
     }
 
+
+    @CrossOrigin(origins = "https://geologymine.fun")
+    @PostMapping("/saveSharedPolygon")
+    public ApiResponse<String> saveSharedPolygon(@RequestBody SharedDataDTO sharedDataDTO) throws IOException {
+        if (sharedDataDTO.getDataType() == 1) {
+            String polygonId = polygonService.saveSharedPolygon(sharedDataDTO.getFromUserId(),sharedDataDTO.getDataId(),sharedDataDTO.getReceiveUserId());
+
+            return ApiResponse.success(polygonId);
+        }
+        else
+        {
+            return ApiResponse.success("none");
+        }
+
+    }
+
 }

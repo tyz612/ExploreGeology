@@ -97,7 +97,22 @@ public class HistoryMessagesServiceImpl extends ServiceImpl<HistoryMessagesDao, 
         Date now = new Date();
         HistoryMessages historyMessages = new HistoryMessages(null, sender, receiver, message, "0", "0", now);
 
+        historyMessagesDao.insert(historyMessages);
 
+        return message;
+    }
+
+    @Override
+    public String saveShareMessage(String receiver, String dataId, String dataType) {
+        JwtUser user = AuthStorage.getUser();
+        String sender = user.getUserId();
+
+        Long id = GeologyDistributedIdGenerator.getInstance().nextId();
+
+        Date now = new Date();
+
+        String message = dataId.concat(",").concat(dataType);
+        HistoryMessages historyMessages = new HistoryMessages(null, sender, receiver, message, "0", "0", now);
 
         historyMessagesDao.insert(historyMessages);
 

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.geology.user.dto.R;
 import com.geology.user.dto.vo.ApplyUpdateAgrsVo;
 import com.geology.user.dto.vo.FriendsInfoDto;
+import com.geology.user.dto.vo.ShareDataInfoDTO;
+import com.geology.user.dto.vo.ShareDataUpdateVO;
 import com.geology.user.model.domain.User;
 import com.geology.user.pojo.Friends;
 import com.geology.user.pojo.UserInfo;
@@ -40,6 +42,12 @@ public interface FriendsService extends IService<Friends> {
     R<String> updateFriendStatus(ApplyUpdateAgrsVo applyUpdateAgrsVo);
 
     R<List<UserInfo>> getFriendsInfoByUserId();
+
+    R<List<ShareDataInfoDTO>> getSharedDataInfo();
+
+    R<String> shareData(String friendId, String dataId, Integer dataType, String dataName);
+
+    R<String> updateShareDataStatus(ShareDataUpdateVO shareDataUpdateVO);
 
 }
 
