@@ -24,4 +24,6 @@ public interface TrackService {
     SingleFileGeologyType getGeologyFileByTrackBufferName(Long trackId, Integer buffer, String keyWords, String tong);
 
     String getBufferGeojson(Long trackId, Integer buffer);
+
+    String saveSharedTrack(String fromUserId, String dataId, String receiveUserId);
 }

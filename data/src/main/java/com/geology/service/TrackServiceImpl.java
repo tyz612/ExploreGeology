@@ -107,4 +107,31 @@ public class TrackServiceImpl implements TrackService {
 
         return bufferGeojson;
     }
+
+    @Override
+    public String saveSharedTrack(String fromUserId, String dataId, String receiveUserId) {
+        Long userId = Long.parseLong(receiveUserId);
+        Long trackId = Long.parseLong(dataId);
+
+        TrackBean trackBean = trackMapper.getTrackByDataId(trackId, userId);
+        TrackEntity trackEntity = new TrackEntity();
+        trackEntity.setEndTime(trackBean.getEndTime());
+        trackEntity.setGeom(trackBean.getGeom());
+        trackEntity.setStartTime(trackBean.getStartTime());
+        Long generatedTrackId = GeologyDistributedIdGenerator.getInstance().nextId();
+        trackEntity.setId(generatedTrackId);
+        trackEntity.setDescription(trackBean.getDescription());
+        trackEntity.setDistance(trackBean.getDistance());
+        trackEntity.setMaxAltitude(trackBean.getMaxAltitude());
+        trackEntity.setMinAltitude(trackBean.getMinAltitude());
+        trackEntity.setStatus(1);
+        trackEntity.setName(trackBean.getName());
+        trackEntity.setUserId(Long.parseLong(fromUserId));
+        Date now = new Date();
+        trackEntity.setCreateTime(now);
+
+        trackMapper.insertSharedTrack(trackEntity);
+
+        return String.valueOf(generatedTrackId);
+    }
 }

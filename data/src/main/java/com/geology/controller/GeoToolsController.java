@@ -59,6 +59,9 @@ public class GeoToolsController {
     @Autowired
     private PolygonService polygonService;
 
+    @Autowired
+    private TrackService trackService;
+
     /**
      * 裁切影像接口
      */
@@ -493,6 +496,11 @@ public class GeoToolsController {
             String polygonId = polygonService.saveSharedPolygon(sharedDataDTO.getFromUserId(),sharedDataDTO.getDataId(),sharedDataDTO.getReceiveUserId());
 
             return ApiResponse.success(polygonId);
+        }
+        if (sharedDataDTO.getDataType() == 2) {
+            String trackId = trackService.saveSharedTrack(sharedDataDTO.getFromUserId(),sharedDataDTO.getDataId(),sharedDataDTO.getReceiveUserId());
+
+            return ApiResponse.success(trackId);
         }
         else
         {

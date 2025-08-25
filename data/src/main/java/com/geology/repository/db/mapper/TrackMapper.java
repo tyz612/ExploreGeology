@@ -27,6 +27,14 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
     List<TrackBean> getTrackByName(@Param("trackName") String trackName, @Param("userId") Long userId);
 
 
+    @Select("SELECT t.id as id, t.geom as geom, t.user_id as userId, t.description as description, t.name as name, t.create_time as createTime,\n" +
+            " t.start_time as startTime, t.end_time as endTime, t.status as status, t.distance as distance, t.min_altitude as minAltitude, t.max_altitude as maxAltitude FROM tracks t  WHERE t.id = #{trackId} and t.user_id = #{userId} and t.status = 1")
+    TrackBean getTrackByDataId(@Param("trackId") Long trackId, @Param("userId") Long userId);
+
+    @Insert("insert into tracks (id, user_id, description, start_time, end_time, create_time, name, status, geom, distance, min_altitude, max_altitude) " +
+            "values (#{id}, #{userId}, #{description}, #{startTime}, #{endTime}, #{createTime}, #{name}, 1, #{geom}::geometry, #{distance}, #{minAltitude}, #{maxAltitude})")
+    void insertSharedTrack(TrackEntity trackEntity);
+
     @Select("SELECT t.id as id, t.user_id as userId, ST_AsGeoJSON(t.geom) as geom FROM tracks t WHERE t.id = #{trackId} and t.user_id = #{userId} and t.status = 1")
     TrackGeomBean getTrackGeomById(@Param("trackId") Long trackId, @Param("userId") Long userId);
 
