@@ -23,4 +23,10 @@ public class PoiLocationDTO {
     private double lon;
 
     private double lat;
+
+    private Integer ispublic;
+
+    private String filePath;
+
+    private String userName;
 }

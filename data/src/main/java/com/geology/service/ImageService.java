@@ -65,7 +65,7 @@ public class ImageService {
         return uploadPhotoInfo;
     }
 
-    public Long savePoi(double lon, double lat, String description,String name, MultipartFile file) throws IOException {
+    public Long savePoi(double lon, double lat, String description,String name, MultipartFile file, String avatar, String userName) throws IOException {
         JwtUser user = AuthStorage.getUser();
         long userId = Long.parseLong(user.getUserId());
 
@@ -80,6 +80,9 @@ public class ImageService {
         poiLocationDTO.setLon(lon);
         poiLocationDTO.setLat(lat);
         poiLocationDTO.setName(name);
+        poiLocationDTO.setIspublic(0);
+        poiLocationDTO.setFilePath(avatar);
+        poiLocationDTO.setUserName(userName);
 
 
         String originalFilename = file.getOriginalFilename();
@@ -111,6 +114,15 @@ public class ImageService {
         return poiLocationBeans;
     }
 
+    public List<PoiLocationBean> getPublicPoi() {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+
+        List<PoiLocationBean> poiLocationBeans = getGeologyInfoMapper.getPublicPoi();
+
+        return poiLocationBeans;
+    }
+
     public List<PoiLocationBean> getAllPoiByName(String poiName)
     {
         JwtUser user = AuthStorage.getUser();
@@ -127,6 +139,15 @@ public class ImageService {
         long userId = Long.parseLong(user.getUserId());
 
         getGeologyInfoMapper.deletePoi(markerId);
+    }
+
+
+    public void publicPoi(Long markerId)
+    {
+        JwtUser user = AuthStorage.getUser();
+        long userId = Long.parseLong(user.getUserId());
+
+        getGeologyInfoMapper.publicPoi(markerId);
     }
 
 }

@@ -78,8 +78,9 @@ public class ImageController {
     @PostMapping("/savePoi")
     public ApiResponse<Long> savePoi(@RequestParam("lon") double lon, @RequestParam("lat") double lat,
                                      @RequestParam("description") String description,
-                                     @RequestParam("image") MultipartFile file, @RequestParam("name") String name) throws IOException {
-        Long savePoi = imageService.savePoi(lon,lat,description,name,file);
+                                     @RequestParam("image") MultipartFile file, @RequestParam("name") String name,
+                                     @RequestParam("avatar") String avatar, @RequestParam("userName") String userName) throws IOException {
+        Long savePoi = imageService.savePoi(lon,lat,description,name,file,avatar, userName);
 
         return ApiResponse.success(savePoi);
     }
@@ -100,6 +101,15 @@ public class ImageController {
         map.put("total", poiLocationBeans.size());
 
         return ApiResponse.success(map);
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/getPublicPois")
+    public ApiResponse<List<PoiLocationBean>> getPublicPois() {
+        List<PoiLocationBean> poiLocationBeans = imageService.getPublicPoi();
+
+        return ApiResponse.success(poiLocationBeans);
     }
 
     @CrossOrigin(origins = "https://geologymine.fun")
@@ -184,6 +194,14 @@ public class ImageController {
     public ApiResponse<String> deletePoi(@RequestParam("markerId") Long markerId) {
        imageService.deletePoi(markerId);
        return ApiResponse.success("deleted");
+    }
+
+
+    @CrossOrigin(origins = "https://geologymine.fun", allowCredentials = "true")
+    @GetMapping("/publicPoi")
+    public ApiResponse<String> publicPoi(@RequestParam("markerId") Long markerId) {
+        imageService.publicPoi(markerId);
+        return ApiResponse.success("updated");
     }
 
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
 
-    @Select("select gid, QDUECD, QDUECC, YSHB, YSC, YSJB, YSBBAV, MDAEC from merge where gid = #{gid}")
+    @Select("select QDUECD, QDUECC, YSHB, YSC, MDAEC, tong, xi, jie, upper_age, lower_age from merge where gid = #{gid}")
     GeologyInfoEntity getGeologyInfoById(@Param("gid") Long gid);
 
     @Select("SELECT gid\n" +
@@ -262,14 +262,19 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     Long insertUserPhoto(UserPhotoBean userPhotoBean);
 
 
-    @Insert("insert into picture_locations (id, pic_id, user_id, name, description, create_time, status, geom) " +
-            "values (#{id}, #{picId}, #{userId}, #{name}, #{description}, #{createTime}, 1, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)) ")
+    @Insert("insert into picture_locations (id, pic_id, user_id, name, description, create_time, status, geom, public, file_path, user_name) " +
+            "values (#{id}, #{picId}, #{userId}, #{name}, #{description}, #{createTime}, 1, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326), #{ispublic}, #{filePath}, #{userName}) ")
     Long insertPoi(PoiLocationDTO poiLocationDTO);
 
 
     @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
             " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.user_id = #{userId} and p.status = 1")
     List<PoiLocationBean> getPoiByUserId(@Param("userId") Long userId);
+
+
+    @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
+            " ST_AsGeoJSON(p.geom) as geom, p.file_path as avatar, p.user_name as userName, p.create_time as createTime, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.public = 1 and p.status=1")
+    List<PoiLocationBean> getPublicPoi();
 
     @Select("SELECT p.id as id, p.pic_id as picId, p.user_id as userId, p.description as description, p.name as name, p.create_time as createTime,\n"+
             " ST_AsGeoJSON(p.geom) as geom, ph.file_path as filePath FROM picture_locations p LEFT JOIN photos ph on p.id = ph.marker_id WHERE p.name like CONCAT('%', #{poiName}, '%') and p.user_id = #{userId} and p.status = 1")
@@ -278,7 +283,8 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     @Update("UPDATE picture_locations SET status = 0 WHERE id = #{markerId};")
     void deletePoi(@Param("markerId") Long markerId);
 
-
+    @Update("UPDATE picture_locations SET public = 1 WHERE id = #{markerId};")
+    void publicPoi(@Param("markerId") Long markerId);
 
     @Insert("insert into polygon (id, user_id, description, create_time, polygon_name, group_id, status, geom) " +
             "values (#{id}, #{userId}, #{description}, #{createTime}, #{polygonName}, #{groupid}, 1, ST_GeomFromText(#{geom}))")

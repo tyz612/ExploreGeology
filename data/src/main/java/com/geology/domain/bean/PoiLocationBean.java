@@ -27,4 +27,8 @@ public class PoiLocationBean {
     private String geom;
 
     private String filePath;
+
+    private String avatar;
+
+    private String userName;
 }
