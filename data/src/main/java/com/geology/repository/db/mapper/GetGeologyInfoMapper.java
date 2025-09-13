@@ -111,6 +111,7 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "                    'gid', t.gid,\n" +
             "                    'qduecd', t.qduecd,\n" +
             "                    'qduecc', t.qduecc,\n" +
+            "                    'tong', t.tong,\n" +
             "                    'yshb', t.yshb,\n" +
             "                    'mdaec', t.mdaec\n" +
             "                          )\n" +

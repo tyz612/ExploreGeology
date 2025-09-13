@@ -93,7 +93,10 @@ public interface TrackMapper extends BaseMapper<TrackEntity> {
             "                                            'gid', g.gid,\n" +
             "                                            'qduecd', g.qduecd,\n" +
             "                                            'qduecc', g.qduecc,\n" +
+            "                                            'xi', g.xi,\n" +
+            "                                            'jie', g.jie,\n" +
             "                                            'yshb', g.yshb,\n" +
+            "                                            'tong', g.tong,\n" +
             "                                            'mdaec', g.mdaec\n" +
             "                                                  )\n" +
             "                            )\n" +
