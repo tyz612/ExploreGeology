@@ -12,6 +12,7 @@ import com.geology.common.utils.Shape2PostgisUtil;
 import com.geology.domain.DTO.*;
 import com.geology.domain.bean.*;
 //import geologyTest.domain.bean.*;
+import com.geology.repository.db.entity.ChinaGeologyInfo;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
@@ -176,6 +177,15 @@ public class GeoToolsController {
         GeologyInfoEntity geologyInfoEntity = geologyTools.getGeologyInfoByLonLat(lon, lat);
 
         return ApiResponse.success(geologyInfoEntity);
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getChinaGeologyType")
+    public ApiResponse<ChinaGeologyInfo> getChinaGeologyType(@RequestParam("lon") double lon, @RequestParam("lat") double lat) {
+        ChinaGeologyInfo chinaGeologyInfo = geologyTools.getChinaGeologyInfoByLonLat(lon, lat);
+
+        return ApiResponse.success(chinaGeologyInfo);
     }
 
     @CrossOrigin(origins = "*")

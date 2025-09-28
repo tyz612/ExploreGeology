@@ -3,6 +3,7 @@ package com.geology.repository.db.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.geology.domain.DTO.PoiLocationDTO;
 import com.geology.domain.bean.*;
+import com.geology.repository.db.entity.ChinaGeologyInfo;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.entity.PolygonEntity;
 import com.geology.repository.db.entity.UserPhotoEntity;
@@ -18,6 +19,10 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     @Select("select QDUECD, QDUECC, YSHB, YSC, MDAEC, tong, xi, jie, upper_age, lower_age from merge where gid = #{gid}")
     GeologyInfoEntity getGeologyInfoById(@Param("gid") Long gid);
 
+
+    @Select("select symbol, unitname, character from dzt02 where gid = #{gid}")
+    ChinaGeologyInfo getChinaGeologyInfoById(@Param("gid") Long gid);
+
     @Select("SELECT gid\n" +
             "FROM public.merge\n" +
             "WHERE ST_Within(\n" +
@@ -25,6 +30,15 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
             "              geom -- 面要素的几何列\n" +
             "      );")
     Long getGidByLonLat(@Param("lon") double lon, @Param("lat") double lat);
+
+
+    @Select("SELECT gid\n" +
+            "FROM public.dzt02\n" +
+            "WHERE ST_Within(\n" +
+            "              ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326), -- 输入的经纬度点，假设使用WGS 84坐标系（SRID 4326）\n" +
+            "              geom -- 面要素的几何列\n" +
+            "      );")
+    Long getChinaGeologyGidByLonLat(@Param("lon") double lon, @Param("lat") double lat);
 
     @Select("SELECT\n" +
             "    gid,\n" +

@@ -4,12 +4,15 @@ import com.geology.domain.DTO.PolygonGeojsonDTO;
 import com.geology.domain.DTO.PolygonInfoDTO;
 import com.geology.domain.DTO.RectangleDTO;
 import com.geology.domain.bean.*;
+import com.geology.repository.db.entity.ChinaGeologyInfo;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 
 import java.util.List;
 
 public interface GeologyTools {
     GeologyInfoEntity getGeologyInfoByLonLat(double lon, double lat);
+
+    ChinaGeologyInfo getChinaGeologyInfoByLonLat(double lon, double lat);
 
     List<GeologyBufferStatisticBean> getGeologyInfoWithinBuffer(double lon, double lat, double rad);
 

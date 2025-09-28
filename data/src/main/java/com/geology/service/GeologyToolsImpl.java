@@ -7,6 +7,7 @@ import com.geology.domain.bean.GeologyBufferStatisticBean;
 import com.geology.domain.bean.GeologyXiBean;
 import com.geology.domain.bean.PolygonXiBean;
 import com.geology.domain.bean.SingleFileGeologyType;
+import com.geology.repository.db.entity.ChinaGeologyInfo;
 import com.geology.repository.db.entity.GeologyInfoEntity;
 import com.geology.repository.db.mapper.GetGeologyInfoMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,14 @@ public class GeologyToolsImpl implements GeologyTools {
         GeologyInfoEntity geologyInfoEntity = getGeologyInfoMapper.getGeologyInfoById(gid);
 
         return geologyInfoEntity;
+    }
+
+    @Override
+    public ChinaGeologyInfo getChinaGeologyInfoByLonLat(double lon, double lat) {
+        Long gid = getGeologyInfoMapper.getChinaGeologyGidByLonLat(lon, lat);
+        ChinaGeologyInfo chinaGeologyInfoEntity = getGeologyInfoMapper.getChinaGeologyInfoById(gid);
+
+        return chinaGeologyInfoEntity;
     }
 
 
