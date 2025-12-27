@@ -452,6 +452,56 @@ public interface GetGeologyInfoMapper extends BaseMapper<GeologyInfoEntity> {
     @Insert("insert into polygon (id, user_id, description, create_time, polygon_name, group_id, status, geom) " +
             "values (#{id}, #{userId}, #{description}, #{createTime}, #{polygonName}, #{groupid}, 1, ST_GeomFromText(#{geom}))")
     void insertDrawingPolygon(PolygonEntity polygonEntity);
+
+
+
+    @Select("SELECT t.gid as gid, t.gb as gb, ST_AsGeoJSON(t.geom) as geom FROM china02county t WHERE t.gb = #{gb}")
+    CountyBean getCountyGeomByCode(@Param("gb") String gb);
+
+
+
+
+    // 行政区域断层数据查询
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'mc', t.mc,\n" +
+            "            'kz', t.kz,\n" +
+            "            'dz', t.dz,\n" +
+            "            'kccylx', t.kccylx,\n" +
+            "            'kcgm', t.kcgm,\n" +
+            "            'cksd', t.cksd,\n" +
+            "            'dzgzcd', t.dzgzcd,\n" +
+            "            'kczk', t.kczk\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM miner t, china02county poly\n" +
+            " WHERE ST_Intersects(t.geom, poly.geom) and poly.gb = #{gb};")
+    SingleFileGeologyType  getMineGeologyFileByCountyCode(@Param("gb") String gb);
+
+    // 行政区域矿产数据查询
+    @Select("SELECT json_build_object(\n" +
+            "    'type', 'FeatureCollection',\n" +
+            "    'features', json_agg(json_build_object(\n" +
+            "        'type', 'Feature',\n" +
+            "        'geometry', ST_AsGeoJSON(ST_Intersection(t.geom, poly.geom))::json,\n" +
+            "        'properties', json_build_object(\n" +
+            "            'attr', t.attr,\n" +
+            "            'code', t.code,\n" +
+            "            'name', t.name,\n" +
+            "            'system', t.system,\n" +
+            "            'status', t.status,\n" +
+            "            'character', t.character\n" +
+            "        )\n" +
+            "    ))\n" +
+            ")::text AS geojson_featurecollection\n" +
+            "FROM fault02 t, china02county poly\n" +
+            " WHERE ST_Intersects(t.geom, poly.geom) and poly.gb = #{gb};")
+    SingleFileGeologyType  getFaultGeologyFileByCountyCode(@Param("gb") String gb);
 }
 
 
